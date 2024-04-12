@@ -13,5 +13,7 @@ namespace Reading_Reviewys.Models
         public string Role { get; set;}
 
         public DateOnly Data_Entrada { get; set;}
+
+        public byte[] Imagem_Perfil { get; set;}
     }
 }
