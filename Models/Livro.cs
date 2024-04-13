@@ -6,6 +6,7 @@ namespace Reading_Reviewys.Models
 
         public Livro() {
             ListaPublicacao = new HashSet<Rel_3>();
+            ListaAutores = new HashSet<Rel_4>();
         }
 
         [Key]
@@ -22,6 +23,9 @@ namespace Reading_Reviewys.Models
 
         // relacionamento 1-N com atributos no relacionamento
         public ICollection<Rel_3> ListaPublicacao { get; set;}
+
+        // relacionamento N-M, sem atributos no relacionamento
+        public ICollection<Rel_4> ListaAutores { get; set;}
 
     }
 }
