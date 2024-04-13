@@ -6,6 +6,7 @@ namespace Reading_Reviewys.Models
 
         public Reviews() {
             ListaComs = new HashSet<Comentarios>();
+            ListaPublicacao = new HashSet<Rel_3>();
         }
 
         [Key]
@@ -23,5 +24,8 @@ namespace Reading_Reviewys.Models
 
         // Lista de Comentários que uma Review tem
         public ICollection<Comentarios> ListaComs { get; set;}
+
+        // relacionamento N-M, com atributos no relacionamento
+        public ICollection<Rel_3> ListaPublicacao { get; set;}
     }
 }
