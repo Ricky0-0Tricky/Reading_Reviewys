@@ -20,7 +20,7 @@ namespace Reading_Reviewys.Models
          * Construção dos Relacionamentos
          * *************************************** */
 
-        // relacionamento N-M, com atributos no relacionamento
+        // relacionamento 1-N com atributos no relacionamento
         public ICollection<Rel_3> ListaPublicacao { get; set;}
 
     }

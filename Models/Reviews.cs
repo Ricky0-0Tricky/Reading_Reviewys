@@ -25,7 +25,7 @@ namespace Reading_Reviewys.Models
         // Lista de Comentários que uma Review tem
         public ICollection<Comentarios> ListaComs { get; set;}
 
-        // relacionamento N-M, com atributos no relacionamento
+        // relacionamento 1-N, com atributos no relacionamento
         public ICollection<Rel_3> ListaPublicacao { get; set;}
     }
 }
