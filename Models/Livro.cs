@@ -1,31 +1,50 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Reading_Reviewys.Models
-{
+namespace Reading_Reviewys.Models {
+    /// <summary>
+    /// Classe representativa da entidade principal do tema
+    /// de Reviews.
+    /// </summary>
     public class Livro {
-
+        /// <summary>
+        /// Construtor por defeito da Classe de Livros
+        /// </summary>
         public Livro() {
-            ListaPublicacao = new HashSet<Rel_3>();
-            ListaAutores = new HashSet<Rel_4>();
+            ListaPublicacao = new HashSet<Reviews>();
+            ListaAutores = new HashSet<Autor>();
         }
 
+        /// <summary>
+        /// Id do Livro que age
+        /// como PK para a Classe Livro
+        /// </summary>
         [Key]
         public int IdLivro { get; set;}
+
+        /// <summary>
+        /// Género do Livro 
+        /// </summary>
         public string Genero { get; set;}
-        
+
+        /// <summary>
+        /// Ano de Publicação do Livro
+        /// </summary>        
         public int AnoPublicacao { get; set;}
 
+        /// <summary>
+        /// Nome do Autor do Livro
+        /// </summary>
         public string NomeAutor { get; set;}
 
         /* ****************************************
          * Construção dos Relacionamentos
-         * *************************************** */
+         * ****************************************/
 
-        // relacionamento 1-N com atributos no relacionamento
-        public ICollection<Rel_3> ListaPublicacao { get; set;}
+        // Relacionamento 1-N com Reviews
+        public ICollection<Reviews> ListaPublicacao { get; set;}
 
-        // relacionamento N-M, sem atributos no relacionamento
-        public ICollection<Rel_4> ListaAutores { get; set;}
+        // Relacionamento N-M com Autores, sem atributos no relacionamento
+        public ICollection<Autor> ListaAutores { get; set;}
 
     }
 }

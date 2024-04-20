@@ -1,15 +1,27 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Reading_Reviewys.Models
-{
+namespace Reading_Reviewys.Models {
+    /// <summary>
+    /// Tipo de Utilizador que está asssociado à entidade Livros.
+    /// </summary>
     public class Autor : Utilizador {
-
+        /// <summary>
+        /// Construtor da Classe Autor
+        /// </summary>
         public Autor() {
-            ListaLivros = new HashSet<Rel_4>();
+            ListaLivros = new HashSet<Livro>();
         }
-        public string Nome { get; set;}
 
-        // relacionamento N-M, sem atributos no relacionamento
-        public ICollection<Rel_4> ListaLivros { get; set; }
+        /// <summary>
+        /// Nome Real do Utilizador
+        /// </summary>
+        public string Nome { get; set; }
+
+        /* ****************************************
+         * Construção dos Relacionamentos
+         *****************************************/
+
+        // Relacionamento N-M com Livro, sem atributos no relacionamento
+        public ICollection<Livro> ListaLivros { get; set; }
     }
 }
