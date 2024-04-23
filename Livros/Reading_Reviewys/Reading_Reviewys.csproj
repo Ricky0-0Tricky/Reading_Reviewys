@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-Reading_Reviewys-7cd6eeeb-e54e-4e75-b030-3a2cb7bec1d6</UserSecretsId>
   </PropertyGroup>

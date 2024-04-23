@@ -8,8 +8,9 @@ namespace Reading_Reviewys.Models {
     public class Utilizador {
         public Utilizador() {
             ListaReviews = new HashSet<Reviews>();
-            
+            ListaComentarios = new HashSet<Comentarios>();
         }
+
         /// <summary>
         /// Id do Utilizador que age como PK 
         /// </summary>
@@ -21,10 +22,7 @@ namespace Reading_Reviewys.Models {
         /// </summary>
         public string Username { get; set;}
 
-        /// <summary>
-        /// Password do Utilizador
-        /// </summary>
-        public string Password { get; set;}
+       
 
         /// <summary>
         /// Tier do Utilizador
@@ -49,5 +47,7 @@ namespace Reading_Reviewys.Models {
 
         // Lista de Reviews que foram feitas por um Utilizador
         public ICollection<Reviews> ListaReviews { get; set;}
+
+        public ICollection<Comentarios> ListaComentarios { get; set; }
     }
 }

@@ -31,10 +31,6 @@ namespace Reading_Reviewys.Models {
         /// </summary>        
         public int AnoPublicacao { get; set;}
 
-        /// <summary>
-        /// Nome do Autor do Livro
-        /// </summary>
-        public string NomeAutor { get; set;}
 
         /* ****************************************
          * Construção dos Relacionamentos
