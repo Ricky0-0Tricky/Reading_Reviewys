@@ -2,14 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Reading_Reviewys.Models;
 
-namespace Reading_Reviewys.Data {
-    /// <summary>
-    /// Classe representativa da BD do projeto
-    /// </summary>
-    public class ApplicationDbContext : IdentityDbContext {
-
+namespace Reading_Reviewys.Data
+{
+    public class ApplicationDbContext : IdentityDbContext
+    {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options) {
+            : base(options)
+        {
         }
 
         /* ********************************************
@@ -24,5 +23,7 @@ namespace Reading_Reviewys.Data {
         public DbSet<Reviews> Reviews { get; set; }
         public DbSet<Comentarios> Comentarios { get; set; }
         public DbSet<Livro> Livro { get; set; }
+
+        
     }
 }
