@@ -41,6 +41,9 @@ namespace Reading_Reviewys.Models {
          * ****************************************/
 
         // Relacionamento 1-N com Reviews
+        /// <summary>
+        /// Lista de Publicações (Reviews) associados ao Livro
+        /// </summary>
         public ICollection<Reviews> ListaPublicacao { get; set;}
 
         // Relacionamento N-M com Autores, sem atributos no relacionamento

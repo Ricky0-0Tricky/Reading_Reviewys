@@ -7,7 +7,7 @@ namespace Reading_Reviewys.Models {
     /// <summary>
     /// Classe representativa dos Comentários
     /// que poderão ser feitos às Reviews pelos
-    /// Útilizadores.
+    /// Utilizadores.
     /// </summary>
     public class Comentarios {
         /// <summary>

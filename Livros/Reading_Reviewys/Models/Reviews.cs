@@ -11,7 +11,7 @@ namespace Reading_Reviewys.Models {
         /// Construtor por defeito da Classe Reviews
         /// </summary>
         public Reviews() {
-            ListaComs = new HashSet<Comentarios>();
+            ListaComentarios = new HashSet<Comentarios>();
         }
 
         /// <summary>
@@ -38,20 +38,34 @@ namespace Reading_Reviewys.Models {
         // Relacionamento 1-N com Utilizadores
 
         // Chave Estrangeira vinda de Utilizador
+        /// <summary>
+        /// FK para Utilizador que escreve a Review
+        /// </summary>
         [ForeignKey(nameof(Utilizador))]
         public int UtilizadorFK { get; set;}
-        public int Utilizador { get; set;}
+        /// <summary>
+        /// FK para Utilizador que escreve a Review
+        /// </summary>
+        public Utilizador Utilizador { get; set;}
 
         // Relacionamento 1-N com Livros
 
         // Chave Estrangeira vinda de Livro
+        /// <summary>
+        /// FK para o Livro objeto da Review
+        /// </summary>
         [ForeignKey(nameof(Livro))]
         public int LivroFK { get; set;}
-        public int Livro { get; set;}
+        /// <summary>
+        /// FK para o Livro objeto da Review
+        /// </summary>
+        public Livro Livro { get; set;}
 
         // Relacionamento 1-N com Comentários
 
-        // Lista de Comentários que uma Review tem
-        public ICollection<Comentarios> ListaComs { get; set;}
+        /// <summary>
+        /// Lista de Comentários associados a uma Review
+        /// </summary>
+        public ICollection<Comentarios> ListaComentarios { get; set;}
     }
 }
