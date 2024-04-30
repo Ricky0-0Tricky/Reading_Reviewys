@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Reading_Reviewys.Models.Reviews>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DescricaoReview)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataAlteracao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Utilizador)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Livro)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DescricaoReview)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataAlteracao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Utilizador.Discriminator)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Livro.IdLivro)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdReview">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdReview">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdReview">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
