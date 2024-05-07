@@ -24,11 +24,16 @@ namespace Reading_Reviewys.Models {
         /// <summary>
         /// Género do Livro 
         /// </summary>
+        [Display(Name="Género")]
+        [StringLength(20)]
+        [Required(ErrorMessage="É necessário escolher o {0} do livro!")]
         public string Genero { get; set;}
 
         /// <summary>
         /// Ano de Publicação do Livro
-        /// </summary>        
+        /// </summary>
+        [Display(Name="Ano de Publicação")]
+        [Required(ErrorMessage = "É necessário escolher o {0} do livro!")]
         public int AnoPublicacao { get; set;}
 
 

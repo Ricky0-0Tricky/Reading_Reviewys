@@ -22,11 +22,15 @@ namespace Reading_Reviewys.Models
         /// Data de submissão do Comentário
         /// que age como parte da PK da Classe Comentarios
         /// </summary>
+        [Display(Name="Data de Publicação")]
         public DateTime Data { get; set; }
 
         /// <summary>
         /// Conteúdo escrito no Comentário
         /// </summary>
+        [Display(Name="Descrição")]
+        [StringLength(100)]
+        [Required(ErrorMessage="Se quer realizar um {0}, escreva qualquer coisa!")]
         public string Descricao { get; set; }
 
         /* ****************************************
@@ -41,13 +45,10 @@ namespace Reading_Reviewys.Models
         public Reviews Review { get; set; }
 
         /// <summary>
-        /// criador do Comentrário
+        /// Criador do Comentrário
         /// </summary>
         [ForeignKey(nameof(CriadorComentario))]
         public int CriadorComentarioFK { get; set; }
         public Utilizador CriadorComentario { get; set; }
-
-
-
     }
 }

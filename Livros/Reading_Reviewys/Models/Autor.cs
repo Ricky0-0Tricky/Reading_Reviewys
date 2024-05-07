@@ -15,6 +15,8 @@ namespace Reading_Reviewys.Models {
         /// <summary>
         /// Nome Real do Utilizador
         /// </summary>
+        [Display(Name="Nome Real")]
+        [StringLength(70)]
         public string Nome { get; set; }
 
         /* ****************************************

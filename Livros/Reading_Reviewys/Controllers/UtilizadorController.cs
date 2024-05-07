@@ -10,22 +10,22 @@ using Reading_Reviewys.Models;
 
 namespace Reading_Reviewys.Controllers
 {
-    public class LivroController : Controller
+    public class UtilizadorController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public LivroController(ApplicationDbContext context)
+        public UtilizadorController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Livro
+        // GET: Utilizador
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Livro.ToListAsync());
+            return View(await _context.Utilizador.ToListAsync());
         }
 
-        // GET: Livro/Details/5
+        // GET: Utilizador/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,39 +33,39 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
-            var livro = await _context.Livro
-                .FirstOrDefaultAsync(m => m.IdLivro == id);
-            if (livro == null)
+            var utilizador = await _context.Utilizador
+                .FirstOrDefaultAsync(m => m.IdUser == id);
+            if (utilizador == null)
             {
                 return NotFound();
             }
 
-            return View(livro);
+            return View(utilizador);
         }
 
-        // GET: Livro/Create
+        // GET: Utilizador/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Livro/Create
+        // POST: Utilizador/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdLivro,Genero,AnoPublicacao")] Livro livro)
+        public async Task<IActionResult> Create([Bind("IdUser,Username,Role,Data_Entrada,Imagem_Perfil")] Utilizador utilizador)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(livro);
+                _context.Add(utilizador);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(livro);
+            return View(utilizador);
         }
 
-        // GET: Livro/Edit/5
+        // GET: Utilizador/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,22 +73,22 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
-            var livro = await _context.Livro.FindAsync(id);
-            if (livro == null)
+            var utilizador = await _context.Utilizador.FindAsync(id);
+            if (utilizador == null)
             {
                 return NotFound();
             }
-            return View(livro);
+            return View(utilizador);
         }
 
-        // POST: Livro/Edit/5
+        // POST: Utilizador/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdLivro,Genero,AnoPublicacao")] Livro livro)
+        public async Task<IActionResult> Edit(int id, [Bind("IdUser,Username,Role,Data_Entrada,Imagem_Perfil")] Utilizador utilizador)
         {
-            if (id != livro.IdLivro)
+            if (id != utilizador.IdUser)
             {
                 return NotFound();
             }
@@ -97,12 +97,12 @@ namespace Reading_Reviewys.Controllers
             {
                 try
                 {
-                    _context.Update(livro);
+                    _context.Update(utilizador);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!LivroExists(livro.IdLivro))
+                    if (!UtilizadorExists(utilizador.IdUser))
                     {
                         return NotFound();
                     }
@@ -113,10 +113,10 @@ namespace Reading_Reviewys.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(livro);
+            return View(utilizador);
         }
 
-        // GET: Livro/Delete/5
+        // GET: Utilizador/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,34 +124,34 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
-            var livro = await _context.Livro
-                .FirstOrDefaultAsync(m => m.IdLivro == id);
-            if (livro == null)
+            var utilizador = await _context.Utilizador
+                .FirstOrDefaultAsync(m => m.IdUser == id);
+            if (utilizador == null)
             {
                 return NotFound();
             }
 
-            return View(livro);
+            return View(utilizador);
         }
 
-        // POST: Livro/Delete/5
+        // POST: Utilizador/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var livro = await _context.Livro.FindAsync(id);
-            if (livro != null)
+            var utilizador = await _context.Utilizador.FindAsync(id);
+            if (utilizador != null)
             {
-                _context.Livro.Remove(livro);
+                _context.Utilizador.Remove(utilizador);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool LivroExists(int id)
+        private bool UtilizadorExists(int id)
         {
-            return _context.Livro.Any(e => e.IdLivro == id);
+            return _context.Utilizador.Any(e => e.IdUser == id);
         }
     }
 }

@@ -20,9 +20,9 @@ namespace Reading_Reviewys.Models {
         /// <summary>
         /// Username do Utilizador
         /// </summary>
+        [StringLength(20)]
+        [Required(ErrorMessage="O {0} é de preenchimento obrigatório!")]
         public string Username { get; set;}
-
-       
 
         /// <summary>
         /// Tier do Utilizador
@@ -32,11 +32,13 @@ namespace Reading_Reviewys.Models {
         /// <summary>
         /// Data de Registo do Utilizador
         /// </summary>
+        [Display(Name="Data de Entrada")]
         public DateOnly Data_Entrada { get; set;}
 
         /// <summary>
         /// Imagem de Perfil do Utilizador 
         /// </summary>
+        [Display(Name ="Imagem de Perfil")]
         public byte[] Imagem_Perfil { get; set;}
 
         /* ****************************************

@@ -24,11 +24,15 @@ namespace Reading_Reviewys.Models {
         /// <summary>
         /// Conteúdo escrito da Review 
         /// </summary>
+        [Display(Name="Descrição da Review")]
+        [StringLength(600)]
+        [Required(ErrorMessage="Caso queria fazer uma {0}, escreva qualquer coisa!")]
         public string DescricaoReview { get; set;}
 
         /// <summary>
         /// Última data de alteração da Review
         /// </summary>
+        [Display(Name="Data da Última Alteração")]
         public DateOnly DataAlteracao { get; set;}
 
         /* ****************************************
