@@ -1,15 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Reading_Reviewys.Models {
+namespace Reading_Reviewys.Models
+{
     /// <summary>
     /// Classe representativa da entidade principal do tema
     /// de Reviews.
     /// </summary>
-    public class Livro {
+    public class Livro
+    {
         /// <summary>
         /// Construtor por defeito da Classe de Livros
         /// </summary>
-        public Livro() {
+        public Livro()
+        {
             ListaPublicacao = new HashSet<Reviews>();
             ListaAutores = new HashSet<Autor>();
         }
@@ -19,22 +22,22 @@ namespace Reading_Reviewys.Models {
         /// como PK para a Classe Livro
         /// </summary>
         [Key]
-        public int IdLivro { get; set;}
+        public int IdLivro { get; set; }
 
         /// <summary>
         /// Género do Livro 
         /// </summary>
-        [Display(Name="Género")]
+        [Display(Name = "Género")]
         [StringLength(20)]
-        [Required(ErrorMessage="É necessário escolher o {0} do livro!")]
-        public string Genero { get; set;}
+        [Required(ErrorMessage = "É necessário escolher o {0} do livro!")]
+        public string Genero { get; set; }
 
         /// <summary>
         /// Ano de Publicação do Livro
         /// </summary>
-        [Display(Name="Ano de Publicação")]
+        [Display(Name = "Ano de Publicação")]
         [Required(ErrorMessage = "É necessário escolher o {0} do livro!")]
-        public int AnoPublicacao { get; set;}
+        public int AnoPublicacao { get; set; }
 
 
         /* ****************************************
@@ -45,10 +48,10 @@ namespace Reading_Reviewys.Models {
         /// <summary>
         /// Lista de Publicações (Reviews) associados ao Livro
         /// </summary>
-        public ICollection<Reviews> ListaPublicacao { get; set;}
+        public ICollection<Reviews> ListaPublicacao { get; set; }
 
         // Relacionamento N-M com Autores, sem atributos no relacionamento
-        public ICollection<Autor> ListaAutores { get; set;}
+        public ICollection<Autor> ListaAutores { get; set; }
 
     }
 }

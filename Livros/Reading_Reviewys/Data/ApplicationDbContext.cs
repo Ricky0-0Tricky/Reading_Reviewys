@@ -24,6 +24,6 @@ namespace Reading_Reviewys.Data
         public DbSet<Comentarios> Comentarios { get; set; }
         public DbSet<Livro> Livro { get; set; }
 
-        
+
     }
 }

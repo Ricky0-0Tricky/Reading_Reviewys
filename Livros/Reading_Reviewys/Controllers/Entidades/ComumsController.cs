@@ -1,31 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Reading_Reviewys.Data;
 using Reading_Reviewys.Models;
 
 namespace Reading_Reviewys.Controllers
 {
-    public class UtilizadorController : Controller
+    public class ComumsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public UtilizadorController(ApplicationDbContext context)
+        public ComumsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Utilizador
+        // GET: Comums
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Utilizador.ToListAsync());
+            return View(await _context.Comum.ToListAsync());
         }
 
-        // GET: Utilizador/Details/5
+        // GET: Comums/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,39 +28,39 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
-            var utilizador = await _context.Utilizador
+            var comum = await _context.Comum
                 .FirstOrDefaultAsync(m => m.IdUser == id);
-            if (utilizador == null)
+            if (comum == null)
             {
                 return NotFound();
             }
 
-            return View(utilizador);
+            return View(comum);
         }
 
-        // GET: Utilizador/Create
+        // GET: Comums/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Utilizador/Create
+        // POST: Comums/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdUser,Username,Role,Data_Entrada,Imagem_Perfil")] Utilizador utilizador)
+        public async Task<IActionResult> Create([Bind("IdUser,Username,Role,Data_Entrada,Imagem_Perfil")] Comum comum)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(utilizador);
+                _context.Add(comum);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(utilizador);
+            return View(comum);
         }
 
-        // GET: Utilizador/Edit/5
+        // GET: Comums/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,22 +68,22 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
-            var utilizador = await _context.Utilizador.FindAsync(id);
-            if (utilizador == null)
+            var comum = await _context.Comum.FindAsync(id);
+            if (comum == null)
             {
                 return NotFound();
             }
-            return View(utilizador);
+            return View(comum);
         }
 
-        // POST: Utilizador/Edit/5
+        // POST: Comums/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdUser,Username,Role,Data_Entrada,Imagem_Perfil")] Utilizador utilizador)
+        public async Task<IActionResult> Edit(int id, [Bind("IdUser,Username,Role,Data_Entrada,Imagem_Perfil")] Comum comum)
         {
-            if (id != utilizador.IdUser)
+            if (id != comum.IdUser)
             {
                 return NotFound();
             }
@@ -97,12 +92,12 @@ namespace Reading_Reviewys.Controllers
             {
                 try
                 {
-                    _context.Update(utilizador);
+                    _context.Update(comum);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UtilizadorExists(utilizador.IdUser))
+                    if (!ComumExists(comum.IdUser))
                     {
                         return NotFound();
                     }
@@ -113,10 +108,10 @@ namespace Reading_Reviewys.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(utilizador);
+            return View(comum);
         }
 
-        // GET: Utilizador/Delete/5
+        // GET: Comums/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,34 +119,34 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
-            var utilizador = await _context.Utilizador
+            var comum = await _context.Comum
                 .FirstOrDefaultAsync(m => m.IdUser == id);
-            if (utilizador == null)
+            if (comum == null)
             {
                 return NotFound();
             }
 
-            return View(utilizador);
+            return View(comum);
         }
 
-        // POST: Utilizador/Delete/5
+        // POST: Comums/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var utilizador = await _context.Utilizador.FindAsync(id);
-            if (utilizador != null)
+            var comum = await _context.Comum.FindAsync(id);
+            if (comum != null)
             {
-                _context.Utilizador.Remove(utilizador);
+                _context.Comum.Remove(comum);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UtilizadorExists(int id)
+        private bool ComumExists(int id)
         {
-            return _context.Utilizador.Any(e => e.IdUser == id);
+            return _context.Comum.Any(e => e.IdUser == id);
         }
     }
 }
