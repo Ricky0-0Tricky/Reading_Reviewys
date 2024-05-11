@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<Reading_Reviewys.Models.Comum>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Index de Comum";
 }
 
-<h1>Index</h1>
+<h1>Index de Comum</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Criar novo</a>
 </p>
 <table class="table">
     <thead>
@@ -43,9 +43,9 @@
                 @Html.DisplayFor(modelItem => item.Imagem_Perfil)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.IdUser">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdUser">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdUser">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.IdUser">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.IdUser">Detalhes</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdUser">Apagar</a>
             </td>
         </tr>
 }

@@ -1,10 +1,10 @@
 ﻿@model Reading_Reviewys.Models.Reviews
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes da Review";
 }
 
-<h1>Details</h1>
+<h1>Detalhes da Review</h1>
 
 <div>
     <h4>Reviews</h4>
@@ -37,6 +37,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdReview">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.IdReview">Editar</a> |
+    <a asp-action="Index">Regressar à listagem</a>
 </div>

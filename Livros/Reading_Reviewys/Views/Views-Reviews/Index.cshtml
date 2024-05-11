@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<Reading_Reviewys.Models.Reviews>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Index das Reviews";
 }
 
-<h1>Index</h1>
+<h1>Index das Reviews</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Criar nova</a>
 </p>
 <table class="table">
     <thead>
@@ -43,9 +43,9 @@
                 @Html.DisplayFor(modelItem => item.Livro.IdLivro)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.IdReview">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdReview">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdReview">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.IdReview">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.IdReview">Detalhes</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdReview">Apagar</a>
             </td>
         </tr>
 }
