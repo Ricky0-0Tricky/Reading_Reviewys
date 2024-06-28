@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Reading_Reviewys.Data;
 using Reading_Reviewys.Models;
+using System;
 
 namespace Reading_Reviewys.Controllers
 {
+    [Authorize(Roles = "Administrador")]
     public class UtilizadorController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -15,12 +18,14 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Utilizador
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Utilizador.ToListAsync());
         }
 
         // GET: Utilizador/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -53,8 +58,14 @@ namespace Reading_Reviewys.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Regista a data de entrada do utilizador
+                utilizador.Data_Entrada = DateOnly.FromDateTime(DateTime.Now);
+
+                // Adição do Utilizador e salvaguarda dos seus dados na BD
                 _context.Add(utilizador);
                 await _context.SaveChangesAsync();
+
+                // Regressa ao Index
                 return RedirectToAction(nameof(Index));
             }
             return View(utilizador);

@@ -17,8 +17,7 @@ namespace Reading_Reviewys.Models
         public int Id { get; set; }
 
         /// <summary>
-        /// Data de submissão do Comentário
-        /// que age como parte da PK da Classe Comentarios
+        /// Data de submissão do Comentário 
         /// </summary>
         [Display(Name = "Data de Publicação")]
         public DateTime Data { get; set; }
@@ -26,9 +25,9 @@ namespace Reading_Reviewys.Models
         /// <summary>
         /// Conteúdo escrito no Comentário
         /// </summary>
-        [Display(Name = "Descrição")]
+        [Display(Name = "Conteúdo")]
         [StringLength(100)]
-        [Required(ErrorMessage = "Se quer realizar um {0}, escreva qualquer coisa!")]
+        [Required(ErrorMessage = "Se quer realizar um comentário, escreva qualquer coisa!")]
         public string Descricao { get; set; }
 
         /* ****************************************

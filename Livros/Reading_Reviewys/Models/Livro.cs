@@ -9,7 +9,7 @@ namespace Reading_Reviewys.Models
     public class Livro
     {
         /// <summary>
-        /// Construtor por defeito da Classe de Livros
+        /// Construtor por defeito da Classe "Livros"
         /// </summary>
         public Livro()
         {
@@ -18,25 +18,39 @@ namespace Reading_Reviewys.Models
         }
 
         /// <summary>
-        /// Id do Livro que age
-        /// como PK para a Classe Livro
+        /// PK
         /// </summary>
         [Key]
-        public int IdLivro { get; set; }
+        public int IdLivro { get; set;}
+
+        /// <summary>
+        /// Imagem do Livro
+        /// </summary>
+        [Required(ErrorMessage = "Escolha uma imagem que corresponda à capa do livro")]
+        public string Capa { get; set;}
+
+        /// <summary>
+        /// Título do Livro
+        /// </summary>
+        [Display(Name = "Título")]
+        [StringLength(20)]
+        [Required(ErrorMessage = "Escreva o {0} do Livro que pretende registrar!")]
+        public string Titulo { get; set;}
 
         /// <summary>
         /// Género do Livro 
         /// </summary>
         [Display(Name = "Género")]
-        [StringLength(20)]
-        [Required(ErrorMessage = "É necessário escolher o {0} do livro!")]
+        [StringLength(15)]
+        [Required(ErrorMessage = "É necessário escolher o Género do Livro!")]
         public string Genero { get; set; }
 
         /// <summary>
         /// Ano de Publicação do Livro
         /// </summary>
         [Display(Name = "Ano de Publicação")]
-        [Required(ErrorMessage = "É necessário escolher o {0} do livro!")]
+        [Range(1, 2024, ErrorMessage = "O Ano de Publicação tem de ter entre {1} e {2}!")]
+        [Required(ErrorMessage = "É necessário escolher o Ano de Publicação do Livro!")]
         public int AnoPublicacao { get; set; }
 
 

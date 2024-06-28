@@ -1,0 +1,57 @@
+﻿@model Reading_Reviewys.Models.Livro
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Editar Livro";
+
+    // Obtenção do ID do user atual
+    var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+
+<h1>Editar Livro</h1>
+
+<h4>Livro</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        @* Mesma verificação efetuada no "Index.cshtml" para evitar breaches de segurança através da inserção do URL *@
+        @if (User.Identity.IsAuthenticated && (User.IsInRole("Autor") && Model.ListaAutores.Any(a => a.IdUser == int.Parse(userID))) || User.IsInRole("Admin"))
+        {
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdLivro" />
+            <div class="form-group">
+                <label asp-for="Capa" class="control-label"></label>
+                <input asp-for="Capa" class="form-control" />
+                <span asp-validation-for="Capa" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Titulo" class="control-label"></label>
+                <input asp-for="Titulo" class="form-control" />
+                <span asp-validation-for="Titulo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Genero" class="control-label"></label>
+                <input asp-for="Genero" class="form-control" />
+                <span asp-validation-for="Genero" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AnoPublicacao" class="control-label"></label>
+                <input asp-for="AnoPublicacao" class="form-control" />
+                <span asp-validation-for="AnoPublicacao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+            </form>
+        }
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Regressar à listagem</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

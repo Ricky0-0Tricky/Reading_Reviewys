@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Reading_Reviewys.Data;
 using Reading_Reviewys.Models;
@@ -39,8 +40,12 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Livros/Create
+        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public IActionResult Create()
         {
+            // Obtenção dos Autores existentes na BD
+            ViewData["ListaAutores"] = _context.Autor.OrderBy(p => p.Nome).ToList();
+
             return View();
         }
 
@@ -49,8 +54,22 @@ namespace Reading_Reviewys.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdLivro,Genero,AnoPublicacao")] Livro livro)
+        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
+        public async Task<IActionResult> Create([Bind("IdLivro,Capa,Titulo,Genero,AnoPublicacao")] Livro livro, int[] listaIdsAutores)
         {
+            //
+            var listaAutores = new List<Autor>();
+            foreach (var autId in listaIdsAutores)
+            {
+                var aut = _context.Autor.FirstOrDefault(p => p.IdUser == autId);
+
+
+                if (aut != null)
+                {
+                    listaAutores.Add(aut);
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(livro);
@@ -61,6 +80,7 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Livros/Edit/5
+        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,7 +101,8 @@ namespace Reading_Reviewys.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdLivro,Genero,AnoPublicacao")] Livro livro)
+        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
+        public async Task<IActionResult> Edit(int id, [Bind("IdLivro,Capa,Titulo,Genero,AnoPublicacao")] Livro livro)
         {
             if (id != livro.IdLivro)
             {
@@ -112,6 +133,7 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Livros/Delete/5
+        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -132,6 +154,7 @@ namespace Reading_Reviewys.Controllers
         // POST: Livros/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var livro = await _context.Livro.FindAsync(id);

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Reading_Reviewys.Models
 {
@@ -8,6 +9,9 @@ namespace Reading_Reviewys.Models
     /// </summary>
     public class Utilizador
     {
+        /// <summary>
+        /// Construtor por defeito da Classe "Utilizador"
+        /// </summary>
         public Utilizador()
         {
             ListaReviews = new HashSet<Reviews>();
@@ -15,7 +19,7 @@ namespace Reading_Reviewys.Models
         }
 
         /// <summary>
-        /// Id do Utilizador que age como PK 
+        /// PK
         /// </summary>
         [Key]
         public int IdUser { get; set; }
@@ -30,19 +34,23 @@ namespace Reading_Reviewys.Models
         /// <summary>
         /// Tier do Utilizador
         /// </summary>
+        [StringLength(12, ErrorMessage = "Insira um Role Válido!")]
+        //[Required(ErrorMessage = "O {0} é de preenchimento obrigatório!")]
         public string Role { get; set; }
 
         /// <summary>
         /// Data de Registo do Utilizador
         /// </summary>
         [Display(Name = "Data de Entrada")]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
         public DateOnly Data_Entrada { get; set; }
 
         /// <summary>
         /// Imagem de Perfil do Utilizador 
         /// </summary>
         [Display(Name = "Imagem de Perfil")]
-        public byte[] Imagem_Perfil { get; set; }
+        public string? Imagem_Perfil { get; set; }
 
         /* ****************************************
          * Construção dos Relacionamentos

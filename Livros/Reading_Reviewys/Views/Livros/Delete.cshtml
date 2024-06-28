@@ -1,0 +1,44 @@
+﻿@model Reading_Reviewys.Models.Livro
+
+@{
+    ViewData["Title"] = "Apagar Livro";
+}
+
+<h1>Apagar Livro</h1>
+
+<h3>Tem a certeza que quer apagar o livro selecionado?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Capa)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Capa)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Titulo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Titulo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Genero)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Genero)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AnoPublicacao)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AnoPublicacao)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="IdLivro" />
+        <input type="submit" value="Apagar" class="btn btn-danger" /> |
+        <a asp-action="Index">Regressar à listagem</a>
+    </form>
+</div>

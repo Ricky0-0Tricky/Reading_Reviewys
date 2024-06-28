@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Reading_Reviewys.Data;
 using Reading_Reviewys.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Reading_Reviewys.Controllers
 {
@@ -23,6 +26,7 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Reviews/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,32 +47,36 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Reviews/Create
+        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public IActionResult Create()
         {
-            ViewData["LivroFK"] = new SelectList(_context.Livro, "IdLivro", "IdLivro");
-            ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "IdUser", "Discriminator");
+            ViewBag.LivroFK = new SelectList(_context.Livro, "IdLivro", "Titulo");
+            ViewBag.UtilizadorFK = new SelectList(_context.Utilizador, "IdUser", "Username");
             return View();
         }
 
         // POST: Reviews/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public async Task<IActionResult> Create([Bind("IdReview,DescricaoReview,DataAlteracao,UtilizadorFK,LivroFK")] Reviews reviews)
         {
+            // Prenchimento da Data de Alteração como o DataTime atual
+            reviews.DataAlteracao = DateOnly.FromDateTime(DateTime.Now);
+
             if (ModelState.IsValid)
             {
                 _context.Add(reviews);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["LivroFK"] = new SelectList(_context.Livro, "IdLivro", "IdLivro", reviews.LivroFK);
-            ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "IdUser", "Discriminator", reviews.UtilizadorFK);
+            ViewBag.LivroFK = new SelectList(_context.Livro, "IdLivro", "Titulo", reviews.LivroFK);
+            ViewBag.UtilizadorFK = new SelectList(_context.Utilizador, "IdUser", "Username", reviews.UtilizadorFK);
             return View(reviews);
         }
 
         // GET: Reviews/Edit/5
+        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,17 +89,16 @@ namespace Reading_Reviewys.Controllers
             {
                 return NotFound();
             }
-            ViewData["LivroFK"] = new SelectList(_context.Livro, "IdLivro", "IdLivro", reviews.LivroFK);
-            ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "IdUser", "Discriminator", reviews.UtilizadorFK);
+            ViewBag.LivroFK = new SelectList(_context.Livro, "IdLivro", "Titulo", reviews.LivroFK);
+            ViewBag.UtilizadorFK = new SelectList(_context.Utilizador, "IdUser", "Username", reviews.UtilizadorFK);
             return View(reviews);
         }
 
         // POST: Reviews/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdReview,DescricaoReview,DataAlteracao,UtilizadorFK,LivroFK")] Reviews reviews)
+        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
+        public async Task<IActionResult> Edit(int id, [Bind("IdReview,DescricaoReview")] Reviews reviews)
         {
             if (id != reviews.IdReview)
             {
@@ -102,6 +109,24 @@ namespace Reading_Reviewys.Controllers
             {
                 try
                 {
+                    // Buscar a Review Existente
+                    var atualReview = await _context.Reviews
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(r => r.IdReview == id);
+
+                    if (atualReview == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Preservação das chaves estrangeiras
+                    reviews.UtilizadorFK = atualReview.UtilizadorFK;
+                    reviews.LivroFK = atualReview.LivroFK;
+
+                    // Atualização da data de alteração 
+                    reviews.DataAlteracao = DateOnly.FromDateTime(DateTime.Now);
+
+                    // Atualização da Review na BD
                     _context.Update(reviews);
                     await _context.SaveChangesAsync();
                 }
@@ -118,12 +143,14 @@ namespace Reading_Reviewys.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["LivroFK"] = new SelectList(_context.Livro, "IdLivro", "IdLivro", reviews.LivroFK);
-            ViewData["UtilizadorFK"] = new SelectList(_context.Utilizador, "IdUser", "Discriminator", reviews.UtilizadorFK);
+
+            ViewBag.LivroFK = new SelectList(_context.Livro, "IdLivro", "Titulo", reviews.LivroFK);
+            ViewBag.UtilizadorFK = new SelectList(_context.Utilizador, "IdUser", "Username", reviews.UtilizadorFK);
             return View(reviews);
         }
 
         // GET: Reviews/Delete/5
+        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -146,6 +173,7 @@ namespace Reading_Reviewys.Controllers
         // POST: Reviews/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var reviews = await _context.Reviews.FindAsync(id);

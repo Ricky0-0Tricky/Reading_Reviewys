@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Reading_Reviewys.Data;
 using Reading_Reviewys.Models;
 
 namespace Reading_Reviewys.Controllers
 {
+    [Authorize(Roles = "Comum,Administrador")]
     public class ComumsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -53,8 +55,15 @@ namespace Reading_Reviewys.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Atribuição de valores 
+                comum.Data_Entrada = DateOnly.FromDateTime(DateTime.Now); ;
+                comum.Role = "Comum";
+
+                // Adição do Comum e salvaguarda dos seus dados na BD
                 _context.Add(comum);
                 await _context.SaveChangesAsync();
+
+                // Regresso ao Index
                 return RedirectToAction(nameof(Index));
             }
             return View(comum);
@@ -81,7 +90,7 @@ namespace Reading_Reviewys.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdUser,Username,Role,Data_Entrada,Imagem_Perfil")] Comum comum)
+        public async Task<IActionResult> Edit(int id, [Bind("IdUser,Username,Imagem_Perfil")] Comum comum)
         {
             if (id != comum.IdUser)
             {
@@ -92,8 +101,22 @@ namespace Reading_Reviewys.Controllers
             {
                 try
                 {
-                    _context.Update(comum);
+                    // Tenta encontrar o Comum a editar através do seu ID
+                    var atualComum = await _context.Comum.FindAsync(id);
+                    if (atualComum == null)
+                    {
+                        return NotFound();
+                    }
+                    // Atualização dos atributos editáveis
+                    atualComum.Username = comum.Username;
+                    atualComum.Imagem_Perfil = comum.Imagem_Perfil;
+
+                    // Update dos atributos editáveis e salvaguarda das alterações para a BD
+                    _context.Update(atualComum);
                     await _context.SaveChangesAsync();
+
+                    // Regresso ao Index
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -106,7 +129,6 @@ namespace Reading_Reviewys.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(comum);
         }

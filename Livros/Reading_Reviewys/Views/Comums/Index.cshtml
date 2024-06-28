@@ -1,0 +1,58 @@
+﻿@model IEnumerable<Reading_Reviewys.Models.Comum>
+
+@{
+    ViewData["Title"] = "Index de Comum";
+}
+
+<h1>Index de Comuns</h1>
+
+<p>
+    <a asp-action="Create">Criar novo comum</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Username)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Role)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Data_Entrada)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Imagem_Perfil)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Role)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Data_Entrada)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Imagem_Perfil)
+            </td>
+                <td>
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <text>
+                            <a asp-action="Edit" asp-route-id="@item.IdUser">Editar</a>
+                            <a asp-action="Delete" asp-route-id="@item.IdUser">Apagar</a>
+                        </text>
+                    }
+                    <a asp-action="Details" asp-route-id="@item.IdUser">Detalhes</a> |
+                </td>
+        </tr>
+}
+    </tbody>
+</table>

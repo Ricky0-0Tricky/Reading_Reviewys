@@ -18,8 +18,7 @@ namespace Reading_Reviewys.Models
         }
 
         /// <summary>
-        /// Id da Review que age como PK
-        /// para a Classe Reviews
+        /// PK
         /// </summary>
         [Key]
         public int IdReview { get; set; }
@@ -29,13 +28,15 @@ namespace Reading_Reviewys.Models
         /// </summary>
         [Display(Name = "Descrição da Review")]
         [StringLength(600)]
-        [Required(ErrorMessage = "Caso queria fazer uma {0}, escreva qualquer coisa!")]
+        [Required(ErrorMessage = "Caso queria fazer uma review, escreva qualquer coisa!")]
         public string DescricaoReview { get; set; }
 
         /// <summary>
         /// Última data de alteração da Review
         /// </summary>
         [Display(Name = "Data da Última Alteração")]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
         public DateOnly DataAlteracao { get; set; }
 
         /* ****************************************

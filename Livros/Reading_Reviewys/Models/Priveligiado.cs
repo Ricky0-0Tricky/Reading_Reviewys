@@ -12,6 +12,8 @@ namespace Reading_Reviewys.Models
         /// Data em que a subscrição foi efetuada
         /// </summary>
         [Display(Name = "Data de Subscrição")]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
         public DateOnly Data_Subscricao { get; set; }
     }
 }

@@ -62,6 +62,32 @@ namespace Reading_Reviewys.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "com",
+                            Name = "Comum",
+                            NormalizedName = "COMUM"
+                        },
+                        new
+                        {
+                            Id = "priv",
+                            Name = "Priveligiado",
+                            NormalizedName = "PRIVELIGIADO"
+                        },
+                        new
+                        {
+                            Id = "aut",
+                            Name = "Autor",
+                            NormalizedName = "AUTOR"
+                        },
+                        new
+                        {
+                            Id = "admin",
+                            Name = "Administrador",
+                            NormalizedName = "ADMINISTRADOR"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -281,7 +307,16 @@ namespace Reading_Reviewys.Data.Migrations
                     b.Property<int>("AnoPublicacao")
                         .HasColumnType("int");
 
+                    b.Property<string>("Capa")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Genero")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
@@ -338,11 +373,12 @@ namespace Reading_Reviewys.Data.Migrations
                         .HasMaxLength(13)
                         .HasColumnType("nvarchar(13)");
 
-                    b.Property<byte[]>("Imagem_Perfil")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("Imagem_Perfil")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -363,8 +399,9 @@ namespace Reading_Reviewys.Data.Migrations
                     b.HasBaseType("Reading_Reviewys.Models.Utilizador");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .IsRequired()
+                        .HasMaxLength(35)
+                        .HasColumnType("nvarchar(35)");
 
                     b.HasDiscriminator().HasValue("Admin");
                 });
@@ -374,8 +411,9 @@ namespace Reading_Reviewys.Data.Migrations
                     b.HasBaseType("Reading_Reviewys.Models.Utilizador");
 
                     b.Property<string>("Nome")
-                        .HasMaxLength(70)
-                        .HasColumnType("nvarchar(70)");
+                        .IsRequired()
+                        .HasMaxLength(65)
+                        .HasColumnType("nvarchar(65)");
 
                     b.HasDiscriminator().HasValue("Autor");
                 });

@@ -8,7 +8,7 @@ namespace Reading_Reviewys.Models
     public class Autor : Utilizador
     {
         /// <summary>
-        /// Construtor da Classe Autor
+        /// Construtor por defeito da Classe "Autor"
         /// </summary>
         public Autor()
         {
@@ -16,10 +16,11 @@ namespace Reading_Reviewys.Models
         }
 
         /// <summary>
-        /// Nome Real do Utilizador
+        /// Nome Real do Autor
         /// </summary>
         [Display(Name = "Nome Real")]
-        [StringLength(70)]
+        [StringLength(65)]
+        [Required(ErrorMessage = "O seu {0} é de preenchimento obrigatório!")]
         public string Nome { get; set; }
 
         /* ****************************************

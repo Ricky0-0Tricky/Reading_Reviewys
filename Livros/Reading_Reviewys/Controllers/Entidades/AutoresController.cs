@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Reading_Reviewys.Data;
 using Reading_Reviewys.Models;
 
 namespace Reading_Reviewys.Controllers
 {
+    [Authorize(Roles = "Autor,Administrador")]
     public class AutoresController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -53,8 +55,15 @@ namespace Reading_Reviewys.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Atribuição de valores 
+                autor.Data_Entrada = DateOnly.FromDateTime(DateTime.Now); ;
+                autor.Role = "Autor";
+
+                // Adição do Autor e salvaguarda dos seus dados na BD
                 _context.Add(autor);
                 await _context.SaveChangesAsync();
+
+                // Regresso ao Index
                 return RedirectToAction(nameof(Index));
             }
             return View(autor);
@@ -81,7 +90,7 @@ namespace Reading_Reviewys.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Nome,IdUser,Username,Role,Data_Entrada,Imagem_Perfil")] Autor autor)
+        public async Task<IActionResult> Edit(int id, [Bind("IdUser,Nome,Username,Imagem_Perfil")] Autor autor)
         {
             if (id != autor.IdUser)
             {
@@ -92,8 +101,24 @@ namespace Reading_Reviewys.Controllers
             {
                 try
                 {
-                    _context.Update(autor);
+                    // Tenta encontrar o Autor a editar através do seu ID
+                    var atualAutor = await _context.Autor.FindAsync(id);
+                    if (atualAutor == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Atualização dos atributos editáveis
+                    atualAutor.Nome = autor.Nome;
+                    atualAutor.Username = autor.Username;
+                    atualAutor.Imagem_Perfil = autor.Imagem_Perfil;
+                    
+                    // Update dos atributos editáveis e salvaguarda das alterações para a BD
+                    _context.Update(atualAutor);
                     await _context.SaveChangesAsync();
+
+                    // Regresso ao Index
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -106,7 +131,6 @@ namespace Reading_Reviewys.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(autor);
         }
