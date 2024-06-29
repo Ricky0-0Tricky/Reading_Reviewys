@@ -52,6 +52,12 @@ namespace Reading_Reviewys.Models
         [Display(Name = "Imagem de Perfil")]
         public string? Imagem_Perfil { get; set; }
 
+        /// <summary>
+        /// Atributo para funcionar como FK 
+        /// entre a tabela dos Utilizadores e da Autenticação
+        /// </summary>
+        public string UserID { get; set; }
+
         /* ****************************************
          * Construção dos Relacionamentos
          * ****************************************/
