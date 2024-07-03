@@ -22,16 +22,15 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Página Principal</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Utilizador" asp-action="Index">Utilizadores</a>
-                        </li>
-                        @if (User.Identity.IsAuthenticated && (User.IsInRole("Administrador") || User.IsInRole("Comum")))
-                        {
+                        @if (User.Identity.IsAuthenticated && (User.IsInRole("Administrador"))){
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Utilizador" asp-action="Index">Utilizadores</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Comums" asp-action="Index">Comuns</a>
                             </li>
                         }
-                        @if (User.Identity.IsAuthenticated && (User.IsInRole("Administrador") || User.IsInRole("Comum")))
+                        @if (User.Identity.IsAuthenticated && (User.IsInRole("Administrador")))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Priveligiados" asp-action="Index">Priveligiados</a>

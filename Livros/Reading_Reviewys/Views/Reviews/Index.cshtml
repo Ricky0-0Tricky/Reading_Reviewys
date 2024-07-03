@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Index das Reviews";
+    string userID = (string)ViewData["UserID"];
 }
 
 <h1>Index das Reviews</h1>
@@ -12,6 +13,7 @@
         <a asp-action="Create">Criar nova review</a>
     </p>
 }
+
 <table class="table">
     <thead>
         <tr>
@@ -40,13 +42,16 @@
                 @Html.DisplayFor(modelItem => item.DataAlteracao)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Utilizador.Username)
+                    <a asp-action="Details" asp-controller="Utilizador" asp-route-id="@item.Utilizador.IdUser">
+                        @item.Utilizador.Username
+                    </a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Livro.IdLivro)
+                @Html.DisplayFor(modelItem => item.Livro.Titulo)
             </td>
             <td>
-                @if (User.Identity.IsAuthenticated)
+                @if (User.Identity.IsAuthenticated &&
+                     item.Utilizador.UserID == userID )
                 {
                 <text>
                     <a asp-action="Edit" asp-route-id="@item.IdReview">Editar</a> 

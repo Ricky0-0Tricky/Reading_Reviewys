@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,17 +13,57 @@ namespace Reading_Reviewys.Controllers
     public class ReviewsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        // <summary>
+        /// objeto para interagir com os dados da pessoa autenticada
+        /// </summary>
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public ReviewsController(ApplicationDbContext context)
+        public ReviewsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Reviews
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reviews.Include(r => r.Livro).Include(r => r.Utilizador);
-            return View(await applicationDbContext.ToListAsync());
+            var reviews = _context.Reviews.Include(r => r.Livro).Include(r => r.Utilizador);
+            // obter ID da pessoa autenticada
+            ViewData["UserID"] = _userManager.GetUserId(User);
+
+
+            // ***********************************************
+
+            /*
+            var utilizador = new Utilizador();
+
+            var user = await _userManager.GetUserAsync(User);
+
+
+            await _userManager.AddToRoleAsync(user, "Priveligiado");
+            await _userManager.RemoveFromRoleAsync(user, "Comum");
+
+            // Transformar Comum em Priveligiado
+            var priveligiado = new Priveligiado();
+
+            var comum = await _context.Comum.Where(c=>c.Username== user.Id).FirstAsync();
+
+            priveligiado.IdUser=comum.IdUser;
+            */
+            // ...
+
+
+
+
+
+
+
+            // ***********************************************
+
+
+
+
+            return View(await reviews.ToListAsync());
         }
 
         // GET: Reviews/Details/5
@@ -59,20 +100,28 @@ namespace Reading_Reviewys.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
-        public async Task<IActionResult> Create([Bind("IdReview,DescricaoReview,DataAlteracao,UtilizadorFK,LivroFK")] Reviews reviews)
+        public async Task<IActionResult> Create([Bind("IdReview,DescricaoReview,DataAlteracao,LivroFK")] Reviews review)
         {
             // Prenchimento da Data de Alteração como o DataTime atual
-            reviews.DataAlteracao = DateOnly.FromDateTime(DateTime.Now);
+            review.DataAlteracao = DateOnly.FromDateTime(DateTime.Now);
 
+            // Captura do ID do User
+            var userId = _userManager.GetUserId(User);
+
+            // Identificação do User com o seu respetivo ID
+            review.UtilizadorFK = await _context.Utilizador
+                                        .Where(r => r.UserID == userId)
+                                        .Select(r => r.IdUser)
+                                        .FirstOrDefaultAsync();
             if (ModelState.IsValid)
             {
-                _context.Add(reviews);
+                _context.Add(review);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.LivroFK = new SelectList(_context.Livro, "IdLivro", "Titulo", reviews.LivroFK);
-            ViewBag.UtilizadorFK = new SelectList(_context.Utilizador, "IdUser", "Username", reviews.UtilizadorFK);
-            return View(reviews);
+            ViewBag.LivroFK = new SelectList(_context.Livro, "IdLivro", "Titulo", review.LivroFK);
+            ViewBag.UtilizadorFK = new SelectList(_context.Utilizador, "IdUser", "Username", review.UtilizadorFK);
+            return View(review);
         }
 
         // GET: Reviews/Edit/5
@@ -84,23 +133,29 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
-            var reviews = await _context.Reviews.FindAsync(id);
-            if (reviews == null)
+            // Captura do ID do User
+            var userId = _userManager.GetUserId(User);
+
+            // Reviews do User
+            var review = await _context.Reviews
+                                       .Where(r => r.IdReview == id && r.Utilizador.UserID == userId)
+                                       .FirstOrDefaultAsync();
+
+            if (review == null)
             {
                 return NotFound();
             }
-            ViewBag.LivroFK = new SelectList(_context.Livro, "IdLivro", "Titulo", reviews.LivroFK);
-            ViewBag.UtilizadorFK = new SelectList(_context.Utilizador, "IdUser", "Username", reviews.UtilizadorFK);
-            return View(reviews);
+
+            return View(review);
         }
 
         // POST: Reviews/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
-        public async Task<IActionResult> Edit(int id, [Bind("IdReview,DescricaoReview")] Reviews reviews)
+        public async Task<IActionResult> Edit(int id, [Bind("IdReview,DescricaoReview,UtilizadorFK,LivroFK")] Reviews review)
         {
-            if (id != reviews.IdReview)
+            if (id != review.IdReview)
             {
                 return NotFound();
             }
@@ -109,10 +164,13 @@ namespace Reading_Reviewys.Controllers
             {
                 try
                 {
+                    // obter ID da pessoa autenticada
+                    var userId = _userManager.GetUserId(User);
+
                     // Buscar a Review Existente
                     var atualReview = await _context.Reviews
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(r => r.IdReview == id);
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync(r => r.IdReview == id && r.Utilizador.UserID == userId);
 
                     if (atualReview == null)
                     {
@@ -120,19 +178,19 @@ namespace Reading_Reviewys.Controllers
                     }
 
                     // Preservação das chaves estrangeiras
-                    reviews.UtilizadorFK = atualReview.UtilizadorFK;
-                    reviews.LivroFK = atualReview.LivroFK;
+                    review.UtilizadorFK = atualReview.UtilizadorFK;
+                    review.LivroFK = atualReview.LivroFK;
 
                     // Atualização da data de alteração 
-                    reviews.DataAlteracao = DateOnly.FromDateTime(DateTime.Now);
+                    review.DataAlteracao = DateOnly.FromDateTime(DateTime.Now);
 
                     // Atualização da Review na BD
-                    _context.Update(reviews);
+                    _context.Update(review);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ReviewsExists(reviews.IdReview))
+                    if (!ReviewsExists(review.IdReview))
                     {
                         return NotFound();
                     }
@@ -144,15 +202,16 @@ namespace Reading_Reviewys.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.LivroFK = new SelectList(_context.Livro, "IdLivro", "Titulo", reviews.LivroFK);
-            ViewBag.UtilizadorFK = new SelectList(_context.Utilizador, "IdUser", "Username", reviews.UtilizadorFK);
-            return View(reviews);
+            return View(review);
         }
 
         // GET: Reviews/Delete/5
         [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public async Task<IActionResult> Delete(int? id)
         {
+            // obter ID da pessoa autenticada
+            var userId = _userManager.GetUserId(User);
+
             if (id == null)
             {
                 return NotFound();
@@ -161,7 +220,8 @@ namespace Reading_Reviewys.Controllers
             var reviews = await _context.Reviews
                 .Include(r => r.Livro)
                 .Include(r => r.Utilizador)
-                .FirstOrDefaultAsync(m => m.IdReview == id);
+                .FirstOrDefaultAsync(m => m.IdReview == id && m.Utilizador.UserID == userId);
+
             if (reviews == null)
             {
                 return NotFound();

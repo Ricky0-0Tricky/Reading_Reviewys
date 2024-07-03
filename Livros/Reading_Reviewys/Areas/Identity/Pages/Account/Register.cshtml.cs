@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 using Reading_Reviewys.Data;
 using Reading_Reviewys.Models;
 
@@ -77,20 +78,27 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// Username do Utilizador
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "O {0} é de preenchimento obrigatório")]
+            [StringLength(20, ErrorMessage = "O {0} deve ter pelo menos {2} e um máximo {1} de caracteres.", MinimumLength = 4)]
+            [Display(Name = "Username")]
+            public string Username { get; set; }
+
+            /// <summary>
+            ///  Email do Utilizador
+            /// </summary>
+            [Required(ErrorMessage = "O {0} é de preenchimento obrigatório")]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// Password do Utilizador
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "A {0} é de preenchimento obrigatório")]
             [StringLength(100, ErrorMessage = "A {0} deve ter pelo menos {2} e um máximo {1} de caracteres.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
@@ -100,12 +108,13 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
             /// Incorporação dos dados de um Comum
             /// no processo de registo de um novo utilizador
             /// </summary>
-            public Comum Comum { get; set; }
+            public Admin Comum { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+            [Required(ErrorMessage = "A Password é de preenchimento obrigatório")]
             [DataType(DataType.Password)]
             [Display(Name = "Confime a Password")]
             [Compare("Password", ErrorMessage = "A password e a password de confirmação não correspondem.")]
@@ -116,7 +125,7 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            // ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -127,8 +136,9 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                await _userStore.SetNormalizedUserNameAsync(user, Input.Username, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.UserName = Input.Username;
 
                 // Ação de adicionar o Utilizador à BD (AspNetUsers)
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -136,18 +146,33 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    
+
+                    // Associar este user com o Role "Comum"
+                    await _userManager.AddToRoleAsync(user, "Administrador");
+
+                    if (Input.Comum == null)
+                    {
+                        Input.Comum = new Admin();
+                    }
+
                     // Guardar os dados do Comum
                     try
                     {
                         // Criar uma ligação entre a tabela dos Utilizadores
                         // (neste caso, um Comum) e a tabela de Autenticação
+                        Input.Comum.Imagem_Perfil = "/default.jpg";
+                        Input.Comum.Role = "Admin";
+                        Input.Comum.Email = user.Email;
+                        Input.Comum.Data_Entrada = DateOnly.FromDateTime(DateTime.Now);
+                        Input.Comum.Username = user.UserName;
                         Input.Comum.UserID = user.Id;
-
                         _context.Add(Input.Comum);
                         await _context.SaveChangesAsync();
                     }
-                    catch (Exception E){ 
+                    catch (Exception e){
+                        _logger.LogError(e, "Ocorreu um erro ao tentar salvar a informação do Comum para a BD.");
+                        ModelState.AddModelError(string.Empty, "Ocorreu um erro ao tentar salvar os seus dados. Tente novamente.");
+                        return Page();
                     }
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -159,7 +184,7 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
                         protocol: Request.Scheme);
 
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                        $"Por favor confirme a sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicar aqui</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

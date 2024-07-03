@@ -26,8 +26,7 @@ namespace Reading_Reviewys.Models
         /// <summary>
         /// Imagem do Livro
         /// </summary>
-        [Required(ErrorMessage = "Escolha uma imagem que corresponda à capa do livro")]
-        public string Capa { get; set;}
+        public string? Capa { get; set;}
 
         /// <summary>
         /// Título do Livro

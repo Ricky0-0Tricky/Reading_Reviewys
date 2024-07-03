@@ -30,13 +30,15 @@
             @Html.DisplayNameFor(model => model.Utilizador)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Utilizador.Username)
+            <a asp-action="Details" asp-controller="Utilizador" asp-route-id="@Model.Utilizador.IdUser">
+                @Model.Utilizador.Username
+            </a>
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Livro)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Livro.IdLivro)
+            @Html.DisplayFor(model => model.Livro.Titulo)
         </dd>
     </dl>
 </div>

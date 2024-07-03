@@ -32,16 +32,18 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Review.DescricaoReview)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CriadorComentario)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CriadorComentario.Username)
-        </dd>
+        <dt class = "col-sm-2">
+            <a asp-action="Details" asp-controller="Utilizador" asp-route-id="@Model.CriadorComentario.IdUser">
+                @Model.CriadorComentario.Username
+            </a>
+        </dt>
     </dl>
 </div>
 <div>
-    @if (User.Identity.IsAuthenticated && userID == Model.CriadorComentarioFK.ToString())
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
     {
         <a asp-action="Edit" asp-route-id="@Model?.Id">Editar</a>
     }

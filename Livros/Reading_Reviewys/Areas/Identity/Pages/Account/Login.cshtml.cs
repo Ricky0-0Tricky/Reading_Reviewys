@@ -61,18 +61,19 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
         public class InputModel
         {
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// Username do Utilizador
             /// </summary>
-            [Required]
-            [EmailAddress]
-            public string Email { get; set; }
+            [Required(ErrorMessage = "O {0} é de preenchimento obrigatório")]
+            [StringLength(20, ErrorMessage = "O {0} deve ter pelo menos {2} e um máximo {1} de caracteres.", MinimumLength = 4)]
+            [Display(Name = "Username")]
+            public string Username { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "A {0} é de preenchimento obrigatório")]
+            [StringLength(100, ErrorMessage = "A {0} deve ter pelo menos {2} e um máximo {1} de caracteres.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
@@ -80,7 +81,7 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Display(Name = "Remember me?")]
+            [Display(Name = "Lembrar-se de mim?")]
             public bool RememberMe { get; set; }
         }
 
@@ -111,10 +112,10 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
+                    _logger.LogInformation("Login com sucesso!.");
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -123,12 +124,12 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
                 }
                 if (result.IsLockedOut)
                 {
-                    _logger.LogWarning("User account locked out.");
+                    _logger.LogWarning("Conta bloqueada.");
                     return RedirectToPage("./Lockout");
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Tentativa Inválida de Login.");
                     return Page();
                 }
             }

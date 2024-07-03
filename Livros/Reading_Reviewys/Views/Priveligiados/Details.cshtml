@@ -38,11 +38,17 @@
             @Html.DisplayNameFor(model => model.Imagem_Perfil)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Imagem_Perfil)
+            <img src="~/Imagens/@Html.DisplayFor(model => model.Imagem_Perfil)"
+                 alt="Imagem de Perfil @Html.DisplayFor(model => model.Imagem_Perfil)"
+                 title="@Html.DisplayFor(model => model.Imagem_Perfil)"
+                 width="75px" />
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdUser">Editar</a> |
+    @if(User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.IdUser">Editar</a>
+    }
     <a asp-action="Index">Regressar à listagem</a>
 </div>

@@ -6,9 +6,6 @@
 
 <h1>Index de Comuns</h1>
 
-<p>
-    <a asp-action="Create">Criar novo comum</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -40,17 +37,20 @@
                 @Html.DisplayFor(modelItem => item.Data_Entrada)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Imagem_Perfil)
+                    <img src="~/Imagens/@Html.DisplayFor(modelItem => item.Imagem_Perfil)"
+                         alt="Imagem de Perfil @Html.DisplayFor(modelItem => item.Imagem_Perfil)"
+                         title="@Html.DisplayFor(modelItem => item.Imagem_Perfil)"
+                         width="75px" />
             </td>
                 <td>
-                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
                     {
                         <text>
                             <a asp-action="Edit" asp-route-id="@item.IdUser">Editar</a>
                             <a asp-action="Delete" asp-route-id="@item.IdUser">Apagar</a>
                         </text>
                     }
-                    <a asp-action="Details" asp-route-id="@item.IdUser">Detalhes</a> |
+                    <a asp-action="Details" asp-route-id="@item.IdUser">Detalhes</a> 
                 </td>
         </tr>
 }

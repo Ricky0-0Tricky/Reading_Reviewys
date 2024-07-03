@@ -67,7 +67,10 @@
                     </text>
                 }
                 <td>
-                    @Html.DisplayFor(modelItem => item.Imagem_Perfil)
+                    <img src="~/Imagens/@Html.DisplayFor(modelItem => item.Imagem_Perfil)"
+                         alt="Imagem de Perfil @Html.DisplayFor(modelItem => item.Imagem_Perfil)"
+                         title="@Html.DisplayFor(modelItem => item.Imagem_Perfil)"
+                         width="75px" />
                 </td>
                 <td>
                     @if(User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
