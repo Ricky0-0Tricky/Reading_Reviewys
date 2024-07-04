@@ -1,20 +1,26 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Reading_Reviewys.Models {
+namespace Reading_Reviewys.Models
+{
     /// <summary>
     /// Tipo de Utilizador que está asssociado à entidade Livros.
     /// </summary>
-    public class Autor : Utilizador {
+    public class Autor : Utilizador
+    {
         /// <summary>
-        /// Construtor da Classe Autor
+        /// Construtor por defeito da Classe "Autor"
         /// </summary>
-        public Autor() {
+        public Autor()
+        {
             ListaLivros = new HashSet<Livro>();
         }
 
         /// <summary>
-        /// Nome Real do Utilizador
+        /// Nome Real do Autor
         /// </summary>
+        [Display(Name = "Nome Real")]
+        [StringLength(65)]
+        [Required(ErrorMessage = "O seu {0} é de preenchimento obrigatório!")]
         public string Nome { get; set; }
 
         /* ****************************************

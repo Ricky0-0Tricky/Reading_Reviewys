@@ -1,35 +1,57 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Reading_Reviewys.Models {
+namespace Reading_Reviewys.Models
+{
     /// <summary>
     /// Classe representativa da entidade principal do tema
     /// de Reviews.
     /// </summary>
-    public class Livro {
+    public class Livro
+    {
         /// <summary>
-        /// Construtor por defeito da Classe de Livros
+        /// Construtor por defeito da Classe "Livros"
         /// </summary>
-        public Livro() {
+        public Livro()
+        {
             ListaPublicacao = new HashSet<Reviews>();
             ListaAutores = new HashSet<Autor>();
         }
 
         /// <summary>
-        /// Id do Livro que age
-        /// como PK para a Classe Livro
+        /// PK
         /// </summary>
         [Key]
         public int IdLivro { get; set;}
 
         /// <summary>
+        /// Imagem do Livro
+        /// </summary>
+        [Required(ErrorMessage = "Escolha uma imagem que corresponda à capa do livro")]
+        public string Capa { get; set;}
+
+        /// <summary>
+        /// Título do Livro
+        /// </summary>
+        [Display(Name = "Título")]
+        [StringLength(20)]
+        [Required(ErrorMessage = "Escreva o {0} do Livro que pretende registrar!")]
+        public string Titulo { get; set;}
+
+        /// <summary>
         /// Género do Livro 
         /// </summary>
-        public string Genero { get; set;}
+        [Display(Name = "Género")]
+        [StringLength(15)]
+        [Required(ErrorMessage = "É necessário escolher o Género do Livro!")]
+        public string Genero { get; set; }
 
         /// <summary>
         /// Ano de Publicação do Livro
-        /// </summary>        
-        public int AnoPublicacao { get; set;}
+        /// </summary>
+        [Display(Name = "Ano de Publicação")]
+        [Range(1, 2024, ErrorMessage = "O Ano de Publicação tem de ter entre {1} e {2}!")]
+        [Required(ErrorMessage = "É necessário escolher o Ano de Publicação do Livro!")]
+        public int AnoPublicacao { get; set; }
 
 
         /* ****************************************
@@ -40,10 +62,10 @@ namespace Reading_Reviewys.Models {
         /// <summary>
         /// Lista de Publicações (Reviews) associados ao Livro
         /// </summary>
-        public ICollection<Reviews> ListaPublicacao { get; set;}
+        public ICollection<Reviews> ListaPublicacao { get; set; }
 
         // Relacionamento N-M com Autores, sem atributos no relacionamento
-        public ICollection<Autor> ListaAutores { get; set;}
+        public ICollection<Autor> ListaAutores { get; set; }
 
     }
 }

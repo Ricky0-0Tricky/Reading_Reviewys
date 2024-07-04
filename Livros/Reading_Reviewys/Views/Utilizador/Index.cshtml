@@ -1,0 +1,85 @@
+﻿@model IEnumerable<Reading_Reviewys.Models.Utilizador>
+
+@{
+    ViewData["Title"] = "Index dos Utilizadores";
+}
+
+<h1>Index dos Utilizadores</h1>
+
+@if(User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
+{
+    <p>
+        <a asp-action="Create">Criar novo utilizador</a>
+    </p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            @if (User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
+            {
+            <th>
+                @Html.DisplayNameFor(model => model.IdUser)
+            </th>
+            }
+            <th>
+                @Html.DisplayNameFor(model => model.Username)
+            </th>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <text>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Role)
+                    </th>   
+                    <th>
+                        @Html.DisplayNameFor(model => model.Data_Entrada)
+                    </th>
+                </text>
+            }
+            <th>
+                @Html.DisplayNameFor(model => model.Imagem_Perfil)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IdUser)
+                    </td>
+                }
+                <td>
+                    @Html.DisplayFor(modelItem => item.Username)
+                </td>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <text>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Role)
+                        </td>
+                
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Data_Entrada)
+                        </td>
+                    </text>
+                }
+                <td>
+                    @Html.DisplayFor(modelItem => item.Imagem_Perfil)
+                </td>
+                <td>
+                    @if(User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
+                    {
+                        <text>
+                            <a asp-action="Edit" asp-route-id="@item.IdUser">Editar</a>
+                            <a asp-action="Delete" asp-route-id="@item.IdUser">Apagar</a>
+                        </text>    
+                    }
+                    <a asp-action="Details" asp-route-id="@item.IdUser">Detalhes</a> 
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

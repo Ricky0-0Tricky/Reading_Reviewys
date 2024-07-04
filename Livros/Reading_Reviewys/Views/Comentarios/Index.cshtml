@@ -1,0 +1,59 @@
+﻿@model IEnumerable<Reading_Reviewys.Models.Comentarios>
+
+@{
+    ViewData["Title"] = "Index de Comentários";
+}
+
+<h1>Index de Comentários</h1>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <p>
+        <a asp-action="Create">Criar novo comentário</a>
+    </p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Data)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descricao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Review)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CriadorComentario)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Data)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descricao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Review.DescricaoReview)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CriadorComentario.Username)
+            </td>
+            <td>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Apagar</a>
+                    }
+                <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> 
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

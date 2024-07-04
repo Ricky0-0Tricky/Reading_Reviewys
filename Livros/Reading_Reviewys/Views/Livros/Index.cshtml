@@ -1,0 +1,66 @@
+﻿@model IEnumerable<Reading_Reviewys.Models.Livro>
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Index de Livros";
+
+    // Obtenção do ID do user atual
+    var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+
+<h1>Index de Livros</h1>
+
+@if (User.Identity.IsAuthenticated && (User.IsInRole("Administrador") || User.IsInRole("Autor")))
+{
+    <p>
+        <a asp-action="Create">Criar novo livro</a>
+    </p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Capa)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Titulo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Genero)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AnoPublicacao)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+             <td>
+                @Html.DisplayFor(modelItem => item.Capa)
+             </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Titulo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Genero)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AnoPublicacao)
+            </td>
+            <td>
+                @* Apresentação das Opções de "Edit" e "Delete" apenas a Autores associados ao Livro ou Admins *@
+                @if (User.Identity.IsAuthenticated && (User.IsInRole("Autor") && item.ListaAutores.Any(a => a.IdUser == int.Parse(userID))) || User.IsInRole("Administrador"))
+                {
+                    <text>
+                        <a asp-action="Edit" asp-route-id="@item.IdLivro">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@item.IdLivro">Apagar</a>
+                    </text>
+                }
+                <a asp-action="Details" asp-route-id="@item.IdLivro">Detalhes</a> 
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,46 @@
+﻿@model Reading_Reviewys.Models.Livro
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Detalhes do Livro";
+}
+
+<h1>Detalhes do Livro</h1>
+
+<div>
+    <h4>Livro</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Capa)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Capa)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Titulo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Titulo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Genero)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Genero)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AnoPublicacao)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AnoPublicacao)
+        </dd>
+    </dl>
+</div>
+<div>
+    @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Autor")))
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.IdLivro">Editar</a>
+    }
+    <a asp-action="Index">Regressar à listagem</a>
+</div>

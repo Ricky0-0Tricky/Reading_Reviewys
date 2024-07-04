@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Reading_Reviewys.Data;
-using Reading_Reviewys.Models;
 
-namespace Reading_Reviewys.Controllers.HtmlController {
+namespace Reading_Reviewys.Controllers.HtmlController
+{
     [Route("api/[controller]")]
     [ApiController]
-    public class APIController : ControllerBase {
+    public class APIController : ControllerBase
+    {
 
         public ApplicationDbContext _context;
 
         public APIController(ApplicationDbContext context)
-        { 
+        {
             _context = context;
         }
 
