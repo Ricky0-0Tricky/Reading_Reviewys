@@ -9,12 +9,12 @@ namespace Reading_Reviewys.Controllers
     public class LivrosController : Controller
     {
         /// <summary>
-        /// referência à BD do projeto
+        /// Referência à BD do projeto
         /// </summary>
         private readonly ApplicationDbContext _context;
 
         /// <summary>
-        /// objecto que contém os dados do Servidor
+        /// Objecto que contém os dados do Servidor
         /// </summary>
         private readonly IWebHostEnvironment _webHostEnvironment;
 
@@ -86,70 +86,69 @@ namespace Reading_Reviewys.Controllers
             }
             else
             {
-                // Erro!
+                return View(livro);
             }
 
             if (ModelState.IsValid)
             {
-                // vars auxiliares
+                // Vars auxiliares
                 string nomeImagem = "";
                 bool haImagem = false;
 
-                // há ficheiro?
+                // Há ficheiro?
                 if (ImagemCapa == null)
                 {
-                    // não há
-                    // crio msg de erro
-                    ModelState.AddModelError("", "Deve fornecer um logótipo");
-                    // devolver controlo à View
+                    // Não há, logo crio uma mensagem de erro
+                    ModelState.AddModelError("", "Deve fornecer uma imagem para a capa!");
+
+                    // Devolver controlo à View
                     return View(livro);
                 }
                 else
                 {
-                    // há ficheiro, mas é uma imagem?
+                    // Há ficheiro, mas é uma imagem?
                     if (!(ImagemCapa.ContentType == "image/png" || ImagemCapa.ContentType == "image/jpeg"))
                     {
-                        // não
-                        // vamos usar uma imagem pre-definida
+                        // Não, então vamos usar uma imagem pre-definida
                         livro.Capa = "CapaDefault.jpg";
                     }
                     else
                     {
-                        // há imagem
+                        // Há imagem
                         haImagem = true;
-                        // gerar nome imagem
+
+                        // Gerar nome imagem
                         Guid g = Guid.NewGuid();
                         nomeImagem = g.ToString();
                         string extensaoImagem = Path.GetExtension(ImagemCapa.FileName).ToLowerInvariant();
                         nomeImagem += extensaoImagem;
-                        // guardar o nome do ficheiro na BD
+
+                        // Guardar o nome do ficheiro na BD
                         livro.Capa = nomeImagem;
                     }
                 }
 
                 _context.Add(livro);
                 await _context.SaveChangesAsync();
-                // guardar a imagem do logótipo
+
+                // Guardar a imagem do livro
                 if (haImagem)
                 {
-                    // encolher a imagem ao tamanho certo --> fazer pelos alunos
-                    // procurar no NuGet
-
-                    // determinar o local de armazenamento da imagem
+                    // Determinar o local de armazenamento da imagem
                     string localizacaoImagem = _webHostEnvironment.WebRootPath;
-                    // adicionar à raiz da parte web, o nome da pasta onde queremos guardar as imagens
+                    // Adicionar à raiz da parte web, o nome da pasta onde queremos guardar as imagens
                     localizacaoImagem = Path.Combine(localizacaoImagem, "Imagens");
 
-                    // será que o local existe?
+                    // Será que o local existe?
                     if (!Directory.Exists(localizacaoImagem))
                     {
                         Directory.CreateDirectory(localizacaoImagem);
                     }
 
-                    // atribuir ao caminho o nome da imagem
+                    // Atribuir ao caminho o nome da imagem
                     localizacaoImagem = Path.Combine(localizacaoImagem, nomeImagem);
 
-                    // guardar a imagem no Disco Rígido
+                    // Guardar a imagem no Disco Rígido
                     using var stream = new FileStream(localizacaoImagem, FileMode.Create);
                     await ImagemCapa.CopyToAsync(stream);
                 }

@@ -46,7 +46,7 @@
     </dl>
 </div>
 <div>
-    @if(User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
     {
         <a asp-action="Edit" asp-route-id="@Model?.IdUser">Editar</a>
     }

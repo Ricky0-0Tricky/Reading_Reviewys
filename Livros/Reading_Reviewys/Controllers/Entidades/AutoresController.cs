@@ -6,7 +6,6 @@ using Reading_Reviewys.Models;
 
 namespace Reading_Reviewys.Controllers
 {
-    [Authorize]
     public class AutoresController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -24,7 +23,7 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Autores/Details/5
-        [Authorize(Roles = "Comum, Priveligiado, Autor, Administrador")]
+        [Authorize(Roles = "Autor, Administrador")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

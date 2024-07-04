@@ -48,9 +48,7 @@
 <div>
     @if (User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
     {
-        <text>
-            <a asp-action="Edit" asp-route-id="@Model?.IdUser">Editar</a> 
-            <a asp-action="Index">Regressar à listagem</a>
-        </text>
+        <a asp-action="Edit" asp-route-id="@Model?.IdUser">Editar</a>
     }
+    <a asp-action="Index">Regressar à listagem</a>
 </div>
