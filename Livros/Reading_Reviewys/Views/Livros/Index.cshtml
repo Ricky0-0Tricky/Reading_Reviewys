@@ -3,9 +3,6 @@
 
 @{
     ViewData["Title"] = "Index de Livros";
-
-    // Obtenção do ID do user atual
-    var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
 <h1>Index de Livros</h1>
@@ -37,9 +34,12 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-             <td>
-                @Html.DisplayFor(modelItem => item.Capa)
-             </td>
+            <td>
+                <img src="~/Imagens/@Html.DisplayFor(modelItem => item.Capa)"
+                     alt="Capa do Livro @Html.DisplayFor(modelItem => item.Titulo)"
+                     title="@Html.DisplayFor(modelItem => item.Titulo)"
+                     width="75px" />
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Titulo)
             </td>
@@ -51,7 +51,7 @@
             </td>
             <td>
                 @* Apresentação das Opções de "Edit" e "Delete" apenas a Autores associados ao Livro ou Admins *@
-                @if (User.Identity.IsAuthenticated && (User.IsInRole("Autor") && item.ListaAutores.Any(a => a.IdUser == int.Parse(userID))) || User.IsInRole("Administrador"))
+                @if (User.Identity.IsAuthenticated && (User.IsInRole("Autor") || User.IsInRole("Administrador")))
                 {
                     <text>
                         <a asp-action="Edit" asp-route-id="@item.IdLivro">Editar</a>

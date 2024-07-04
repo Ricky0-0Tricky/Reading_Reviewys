@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Index de Comentários";
+    string userID = (string)ViewData["UserID"];
 }
 
 <h1>Index de Comentários</h1>
@@ -43,10 +44,12 @@
                 @Html.DisplayFor(modelItem => item.Review.DescricaoReview)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CriadorComentario.Username)
+                    <a asp-action="Details" asp-controller="Utilizador" asp-route-id="@item.CriadorComentario.IdUser">
+                        @item.CriadorComentario.Username
+                    </a>
             </td>
             <td>
-                    @if (User.Identity.IsAuthenticated)
+                    @if (User.Identity.IsAuthenticated && item.CriadorComentario.UserID== userID)
                     {
                         <a asp-action="Edit" asp-route-id="@item.Id">Editar</a>
                         <a asp-action="Delete" asp-route-id="@item.Id">Apagar</a>

@@ -15,30 +15,59 @@
             @Html.DisplayNameFor(model => model.Capa)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Capa)
+             <img src="@Url.Content("~/Imagens/" + Model.Capa)" 
+                 alt="Capa do Livro @Html.DisplayFor(model => model.Titulo)" 
+                 title="@Html.DisplayFor(model => model.Titulo)" 
+                 width="75px" />
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Titulo)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Titulo)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Genero)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Genero)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.AnoPublicacao)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.AnoPublicacao)
+        </dd>
+        <dt class="col-sm-2">
+            Lista de Autores
+        </dt>
+        <dd class="col-sm-10">
+            <ul>
+                @if (!Model.ListaAutores.Any())
+                {
+                    <li>
+                        Desconhecido
+                    </li>
+                }
+                else
+                {
+                    @foreach (var autor in Model.ListaAutores)
+                    {
+                        <li>
+                            <a asp-action="Details"
+                               asp-controller="Utilizador"
+                               asp-route-id="@autor.IdUser">
+                                @autor.Nome
+                            </a>
+                        </li>
+                    }
+                }
+            </ul>
         </dd>
     </dl>
 </div>
 <div>
-    @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Autor")))
+    @if (User.Identity.IsAuthenticated && (User.IsInRole("Administrador")))
     {
         <a asp-action="Edit" asp-route-id="@Model?.IdLivro">Editar</a>
     }
