@@ -130,10 +130,16 @@ namespace Reading_Reviewys.Controllers
                     // Link entre os Utilizadores de tabelas diferentes
                     utilizador.UserID = utilIdentity.Id;
 
+                    // Role do Utilizador
+                    var role = await _userManager.GetRolesAsync(utilIdentity);
+
                     // Criação do Utilizador na tabela "Utilizadores" segundo o Role escolhido e Atribuição de Permissões
                     switch (utilizador.Role)
                     {
                         case "Comum":
+                            // Remoção do role do Utilizador
+                            await _userManager.RemoveFromRolesAsync(utilIdentity, role);
+
                             await _userManager.AddToRoleAsync(utilIdentity, "Comum");
                             var comum = new Comum
                             {
@@ -147,6 +153,9 @@ namespace Reading_Reviewys.Controllers
                             _context.Add(comum);
                             break;
                         case "Priveligiado":
+                            // Remoção do role do Utilizador
+                            await _userManager.RemoveFromRolesAsync(utilIdentity, role);
+
                             await _userManager.AddToRoleAsync(utilIdentity, "Priveligiado");
                             var priveligiado = new Priveligiado
                             {
@@ -161,6 +170,9 @@ namespace Reading_Reviewys.Controllers
                             _context.Add(priveligiado);
                             break;
                         case "Autor":
+                            // Remoção do role do Utilizador
+                            await _userManager.RemoveFromRolesAsync(utilIdentity, role);
+
                             await _userManager.AddToRoleAsync(utilIdentity, "Autor");
                             var autor = new Autor
                             {
@@ -175,6 +187,9 @@ namespace Reading_Reviewys.Controllers
                             _context.Add(autor);
                             break;
                         case "Admin":
+                            // Remoção do role do Utilizador
+                            await _userManager.RemoveFromRolesAsync(utilIdentity, role);
+
                             await _userManager.AddToRoleAsync(utilIdentity, "Administrador");
                             var admin = new Admin
                             {
@@ -189,6 +204,9 @@ namespace Reading_Reviewys.Controllers
                             _context.Add(admin);
                             break;
                         default:
+                            // Remoção do role do Utilizador
+                            await _userManager.RemoveFromRolesAsync(utilIdentity, role);
+
                             await _userManager.AddToRoleAsync(utilIdentity, "Comum");
                             var utilErro = new Comum
                             {
