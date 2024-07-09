@@ -17,7 +17,7 @@ namespace Reading_Reviewys.Controllers
         private readonly UserManager<IdentityUser> _userManager;
 
         /// <summary>
-        /// objecto que contém os dados do Servidor
+        /// Objecto que contém os dados do Servidor
         /// </summary>
         private readonly IWebHostEnvironment _webHostEnvironment;
 
