@@ -81,7 +81,7 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account.Manage
             {
                 if (!await _userManager.CheckPasswordAsync(user, Input.Password))
                 {
-                    ModelState.AddModelError(string.Empty, "Incorrect password.");
+                    ModelState.AddModelError(string.Empty, "Password Atual errada.");
                     return Page();
                 }
             }
