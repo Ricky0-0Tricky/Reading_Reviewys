@@ -1,10 +1,11 @@
-﻿@{
+﻿@model IEnumerable<Reading_Reviewys.Models.Reviews>
+
+@{
     ViewData["Title"] = "Página Principal";
 }
 
 <div class="text-center">
     <h1 class="display-4">Bem-vindo!</h1>
-    <!--<p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>-->
     <div class="card">
         <div class="card-body text-start">
             <p class="card-text"> 
@@ -15,6 +16,43 @@
             </p>
         </div>       
     </div>
+
+    <div class="carousel slide">    
+        <div class="carousel-inner">    
+            @foreach (var c in Model)
+            {
+                <div class="carousel-item active">
+                    @if (c.Livro != null)
+                    {
+                        <div class="carousel-caption d-none d-md-block">
+                            <img src="@c.Livro.Capa" class="d-block w-100" />
+                        </div>
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>@Html.DisplayFor(modelLivro => c.Livro.Titulo)</h5>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="carousel-caption d-none d-md-block">
+                            <img src="@c.Livro.Capa" class="d-block w-100" alt="Imagem indisponível" />
+                        </div>
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>Título Indisponível</h5>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        <a class="carousel-control-prev" href="#IndicadorExemplo" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Anterior</span>
+        </a>
+        <a class="carousel-control-next" href="#IndicadorExemplo" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Próximo</span>
+        </a>
+    </div>
+
     <div class="mb-5">
         <h2 class ="display-6">Atualizações</h2>
         <div class="card">
