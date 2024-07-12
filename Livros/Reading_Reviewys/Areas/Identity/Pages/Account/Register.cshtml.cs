@@ -161,7 +161,7 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
                         // Criar uma ligação entre a tabela dos Utilizadores
                         // (neste caso, um Comum) e a tabela de Autenticação
                         Input.Comum.Imagem_Perfil = "/default.jpg";
-                        Input.Comum.Role = "Admin";
+                        Input.Comum.Role = "Comum";
                         Input.Comum.Data_Entrada = DateOnly.FromDateTime(DateTime.Now);
                         Input.Comum.Username = user.UserName;
                         Input.Comum.UserID = user.Id;
