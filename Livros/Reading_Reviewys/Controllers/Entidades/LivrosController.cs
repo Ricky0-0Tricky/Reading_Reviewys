@@ -41,6 +41,7 @@ namespace Reading_Reviewys.Controllers
 
             var livro = await _context.Livro
                 .Include(l => l.ListaAutores)
+                .Include(l => l.ListaPublicacao)
                 .FirstOrDefaultAsync(m => m.IdLivro == id);
             if (livro == null)
             {

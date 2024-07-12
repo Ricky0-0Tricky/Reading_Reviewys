@@ -5,15 +5,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Reading_Reviewys.Data;
 using Reading_Reviewys.Models;
+using System.Security.Claims;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
 
 namespace Reading_Reviewys.Controllers
 {
     public class ComentariosController : Controller
     {
         private readonly ApplicationDbContext _context;
-        // <summary>
-        /// objeto para interagir com os dados da pessoa autenticada
-        /// </summary>
         private readonly UserManager<IdentityUser> _userManager;
 
         public ComentariosController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
@@ -26,7 +27,8 @@ namespace Reading_Reviewys.Controllers
         public async Task<IActionResult> Index()
         {
             var comentarios = _context.Comentarios.Include(c => c.CriadorComentario).Include(c => c.Review);
-            // obter ID da pessoa autenticada
+
+            // Obter ID da pessoa autenticada
             ViewData["UserID"] = _userManager.GetUserId(User);
             return View(await comentarios.ToListAsync());
         }
@@ -35,6 +37,9 @@ namespace Reading_Reviewys.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
+            // Obter ID da pessoa autenticada
+            ViewData["UserID"] = _userManager.GetUserId(User);
+
             if (id == null)
             {
                 return NotFound();
@@ -67,16 +72,13 @@ namespace Reading_Reviewys.Controllers
         [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public async Task<IActionResult> Create([Bind("Id,Data,Descricao,ReviewFK")] Comentarios comentario)
         {
-            // Preenchimento da data de publicacao com a data atual 
             comentario.Data = DateTime.Now;
-            // obter ID da pessoa autenticada
             var userId = _userManager.GetUserId(User);
 
-            // Identificação do User com o seu respetivo ID
             comentario.CriadorComentarioFK = await _context.Utilizador
-                                                    .Where(r => r.UserID == userId)
-                                                    .Select(r => r.IdUser)
-                                                    .FirstOrDefaultAsync();
+                .Where(r => r.UserID == userId)
+                .Select(r => r.IdUser)
+                .FirstOrDefaultAsync();
 
             if (ModelState.IsValid)
             {
@@ -85,11 +87,9 @@ namespace Reading_Reviewys.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Caso o Modelo não seja válido apresenta-se as chaves estrangeiras disponíveis
             ViewData["CriadorComentarioFK"] = new SelectList(_context.Utilizador, "IdUser", "Username", comentario.CriadorComentarioFK);
             ViewData["ReviewFK"] = new SelectList(_context.Reviews, "IdReview", "DescricaoReview", comentario.ReviewFK);
 
-            // Fica-se na mesma View
             return View(comentario);
         }
 
@@ -102,13 +102,12 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
-            // obter ID da pessoa autenticada
             var userId = _userManager.GetUserId(User);
 
             var comentario = await _context.Comentarios
-                                           .Include(c => c.CriadorComentario)
-                                           .Where(r => r.Id == id && r.CriadorComentario.UserID == userId)
-                                           .FirstOrDefaultAsync();
+                .Include(c => c.CriadorComentario)
+                .Where(r => r.Id == id && r.CriadorComentario.UserID == userId)
+                .FirstOrDefaultAsync();
 
             if (comentario == null)
             {
@@ -135,27 +134,21 @@ namespace Reading_Reviewys.Controllers
             {
                 try
                 {
-                    // obter ID da pessoa autenticada
                     var userId = _userManager.GetUserId(User);
 
-                    // Pesquisa do comentário na BD
                     var atualComentario = await _context.Comentarios
-                                                        .AsNoTracking()
-                                                        .FirstOrDefaultAsync(c => c.Id == id && c.CriadorComentario.UserID == userId);
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(c => c.Id == id && c.CriadorComentario.UserID == userId);
 
                     if (atualComentario == null)
                     {
                         return NotFound();
                     }
 
-                    // Preservação das Chaves Estrangeiras
                     comentarios.ReviewFK = atualComentario.ReviewFK;
                     comentarios.CriadorComentarioFK = atualComentario.CriadorComentarioFK;
-
-                    // Atualização da data
                     comentarios.Data = DateTime.Now;
 
-                    // Atualização do Comentário na BD
                     _context.Update(comentarios);
                     await _context.SaveChangesAsync();
                 }
@@ -173,14 +166,11 @@ namespace Reading_Reviewys.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Caso o Modelo não seja válido apresenta-se as chaves estrangeiras disponíveis
             ViewData["CriadorComentarioFK"] = new SelectList(_context.Utilizador, "IdUser", "Username", comentarios.CriadorComentarioFK);
             ViewData["ReviewFK"] = new SelectList(_context.Reviews, "IdReview", "DescricaoReview", comentarios.ReviewFK);
 
-            // Fica-se na mesma View
             return View(comentarios);
         }
-
 
         // GET: Comentarios/Delete/5
         [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
@@ -190,13 +180,13 @@ namespace Reading_Reviewys.Controllers
             {
                 return NotFound();
             }
-            // obter ID da pessoa autenticada
+
             var userId = _userManager.GetUserId(User);
 
             var comentario = await _context.Comentarios
-                                           .Include(c => c.CriadorComentario)
-                                           .Where(r => r.Id == id && r.CriadorComentario.UserID == userId)
-                                           .FirstOrDefaultAsync();
+                .Include(c => c.CriadorComentario)
+                .Where(r => r.Id == id && r.CriadorComentario.UserID == userId)
+                .FirstOrDefaultAsync();
             if (comentario == null)
             {
                 return NotFound();
@@ -210,12 +200,11 @@ namespace Reading_Reviewys.Controllers
         [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // obter ID da pessoa autenticada
             var userId = _userManager.GetUserId(User);
 
             var comentario = await _context.Comentarios
-                                           .Where(c => c.Id == id && c.CriadorComentario.UserID == userId)
-                                           .FirstOrDefaultAsync();
+                .Where(c => c.Id == id && c.CriadorComentario.UserID == userId)
+                .FirstOrDefaultAsync();
 
             if (comentario == null)
             {
@@ -230,6 +219,36 @@ namespace Reading_Reviewys.Controllers
         private bool ComentariosExists(int id)
         {
             return _context.Comentarios.Any(e => e.Id == id);
+        }
+
+        // POST: AdicionarComentario
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AdicionarComentario(int IdReview, string Descricao)
+        {
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(Descricao))
+            {
+                ModelState.AddModelError("Descricao", "O comentário não pode estar vazio.");
+                return RedirectToAction("Details", "Reviews", new { id = IdReview });
+            }
+
+            var comentario = new Comentarios
+            {
+                ReviewFK = IdReview,
+                CriadorComentarioFK = await _context.Utilizador
+                    .Where(u => u.UserID == userId)
+                    .Select(u => u.IdUser)
+                    .FirstOrDefaultAsync(),
+                Descricao = Descricao,
+                Data = DateTime.Now
+            };
+
+            _context.Comentarios.Add(comentario);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Reviews", new { id = IdReview });
         }
     }
 }

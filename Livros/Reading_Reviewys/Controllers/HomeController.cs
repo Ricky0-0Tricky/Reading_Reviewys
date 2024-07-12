@@ -25,7 +25,9 @@ namespace Reading_Reviewys.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            // Conceder ao Index todos os Livros na BD
+            var livros = _context.Livro.ToList();
+            return View(livros);
         }
 
         public IActionResult Privacy()

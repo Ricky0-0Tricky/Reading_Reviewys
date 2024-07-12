@@ -27,42 +27,13 @@ namespace Reading_Reviewys.Controllers
         // GET: Reviews
         public async Task<IActionResult> Index()
         {
+            // Receber as reviews existentes na BD
             var reviews = _context.Reviews.Include(r => r.Livro).Include(r => r.Utilizador);
-            // obter ID da pessoa autenticada
+
+            // Obter ID da pessoa autenticada
             ViewData["UserID"] = _userManager.GetUserId(User);
 
-
-            // ***********************************************
-
-            /*
-            var utilizador = new Utilizador();
-
-            var user = await _userManager.GetUserAsync(User);
-
-
-            await _userManager.AddToRoleAsync(user, "Priveligiado");
-            await _userManager.RemoveFromRoleAsync(user, "Comum");
-
-            // Transformar Comum em Priveligiado
-            var priveligiado = new Priveligiado();
-
-            var comum = await _context.Comum.Where(c=>c.Username== user.Id).FirstAsync();
-
-            priveligiado.IdUser=comum.IdUser;
-            */
-            // ...
-
-
-
-
-
-
-
-            // ***********************************************
-
-
-
-
+            // Retornar a View com a lista das reviews na BD
             return View(await reviews.ToListAsync());
         }
 
@@ -77,6 +48,7 @@ namespace Reading_Reviewys.Controllers
 
             var reviews = await _context.Reviews
                 .Include(r => r.Livro)
+                .Include(r => r.ListaComentarios)
                 .Include(r => r.Utilizador)
                 .FirstOrDefaultAsync(m => m.IdReview == id);
             if (reviews == null)
