@@ -48,6 +48,8 @@
                         @item.CriadorComentario.Username
                     </a>
             </td>
+
+            @* Só os utilizadores que estejam autenticados e sejam proprietários dos comentários podem ver estas opções*@
             <td>
                     @if (User.Identity.IsAuthenticated && item.CriadorComentario.UserID== userID)
                     {

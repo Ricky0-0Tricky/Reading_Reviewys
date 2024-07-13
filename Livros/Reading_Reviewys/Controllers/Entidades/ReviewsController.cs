@@ -12,9 +12,13 @@ namespace Reading_Reviewys.Controllers
 {
     public class ReviewsController : Controller
     {
-        private readonly ApplicationDbContext _context;
         // <summary>
-        /// objeto para interagir com os dados da pessoa autenticada
+        /// Objeto representativo da BD
+        /// </summary>
+        private readonly ApplicationDbContext _context;
+
+        // <summary>
+        /// Objeto para interagir com os dados da pessoa autenticada
         /// </summary>
         private readonly UserManager<IdentityUser> _userManager;
 
@@ -27,42 +31,13 @@ namespace Reading_Reviewys.Controllers
         // GET: Reviews
         public async Task<IActionResult> Index()
         {
+            // Receber as reviews existentes na BD
             var reviews = _context.Reviews.Include(r => r.Livro).Include(r => r.Utilizador);
-            // obter ID da pessoa autenticada
+
+            // Obter ID da pessoa autenticada
             ViewData["UserID"] = _userManager.GetUserId(User);
 
-
-            // ***********************************************
-
-            /*
-            var utilizador = new Utilizador();
-
-            var user = await _userManager.GetUserAsync(User);
-
-
-            await _userManager.AddToRoleAsync(user, "Priveligiado");
-            await _userManager.RemoveFromRoleAsync(user, "Comum");
-
-            // Transformar Comum em Priveligiado
-            var priveligiado = new Priveligiado();
-
-            var comum = await _context.Comum.Where(c=>c.Username== user.Id).FirstAsync();
-
-            priveligiado.IdUser=comum.IdUser;
-            */
-            // ...
-
-
-
-
-
-
-
-            // ***********************************************
-
-
-
-
+            // Retornar a View com a lista das reviews na BD
             return View(await reviews.ToListAsync());
         }
 
@@ -77,6 +52,7 @@ namespace Reading_Reviewys.Controllers
 
             var reviews = await _context.Reviews
                 .Include(r => r.Livro)
+                .Include(r => r.ListaComentarios)
                 .Include(r => r.Utilizador)
                 .FirstOrDefaultAsync(m => m.IdReview == id);
             if (reviews == null)
@@ -117,7 +93,7 @@ namespace Reading_Reviewys.Controllers
             {
                 _context.Add(review);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Livros", new { id = review.LivroFK });
             }
             ViewBag.LivroFK = new SelectList(_context.Livro, "IdLivro", "Titulo", review.LivroFK);
             ViewBag.UtilizadorFK = new SelectList(_context.Utilizador, "IdUser", "Username", review.UtilizadorFK);
@@ -164,7 +140,7 @@ namespace Reading_Reviewys.Controllers
             {
                 try
                 {
-                    // obter ID da pessoa autenticada
+                    // Obter ID da pessoa autenticada
                     var userId = _userManager.GetUserId(User);
 
                     // Buscar a Review Existente
@@ -199,7 +175,7 @@ namespace Reading_Reviewys.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Livros", new { id = review.LivroFK });
             }
 
             return View(review);
@@ -239,13 +215,24 @@ namespace Reading_Reviewys.Controllers
             var reviews = await _context.Reviews.FindAsync(id);
             if (reviews != null)
             {
-                _context.Reviews.Remove(reviews);
-            }
+                // Captura da FK do Livro antes do apagamento da review
+                var livroId = reviews.LivroFK;
 
-            await _context.SaveChangesAsync();
+                // Apagamento da Review e salvaguarda para a BD
+                _context.Reviews.Remove(reviews);
+                await _context.SaveChangesAsync();
+
+                // Redirect para a página do livro
+                return RedirectToAction("Details", "Livros", new { id = livroId });
+            }
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Verifica se uma Review existe na BD
+        /// </summary>
+        /// <param name="id">ID da Review</param>
+        /// <returns>Verdadeiro se a Review existir, Falso caso contrário</returns>
         private bool ReviewsExists(int id)
         {
             return _context.Reviews.Any(e => e.IdReview == id);

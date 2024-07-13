@@ -4,48 +4,106 @@
 @{
     ViewData["Title"] = "Detalhes da Review";
 
-    // Obtenção do ID do user atual
+    // Obter o UserID do Utilizador
     var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
 <h1>Detalhes da Review</h1>
 
 <div>
-    <h4>Reviews</h4>
+    <h4>Review</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DescricaoReview)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.DescricaoReview)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DataAlteracao)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.DataAlteracao)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Utilizador)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             <a asp-action="Details" asp-controller="Utilizador" asp-route-id="@Model.Utilizador.IdUser">
                 @Model.Utilizador.Username
             </a>
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Livro)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Livro.Titulo)
         </dd>
     </dl>
 </div>
+
 <div>
     @if (User.Identity.IsAuthenticated && userID == Model.UtilizadorFK.ToString())
     {
         <a asp-action="Edit" asp-route-id="@Model?.IdReview">Editar</a>
     }
-    <a asp-action="Index">Regressar à listagem</a>
+</div>
+
+<hr />
+
+@* Display dos Comentários da Review *@
+<div>
+    <h4>Comentários</h4>
+    @if (Model.ListaComentarios != null && Model.ListaComentarios.Any())
+    {
+        <ul class="list-group">
+            @foreach (var comentario in Model.ListaComentarios)
+            {
+                <li class="list-group-item">
+                    <p>@comentario.Descricao</p>
+                    <small>
+                        Publicado pelo user: <a asp-action="Details" asp-controller="Utilizador" asp-route-id="@comentario.CriadorComentarioFK">
+                            @comentario.CriadorComentarioFK
+                        </a> em @comentario.Data
+                    </small>
+                    @if (User.Identity.IsAuthenticated && userID == comentario.CriadorComentario.UserID)
+                    {
+                        <div class="mt-2">
+                            <a asp-action="Edit" asp-controller="Comentarios" asp-route-id="@comentario.Id" class="btn btn-sm btn-warning">Editar</a>
+                            <form asp-action="Delete" asp-controller="Comentarios" asp-route-id="@comentario.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    }
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Sem comentários ainda.</p>
+    }
+</div>
+
+<hr />
+
+@* Área para adicionar comentário *@
+<div>
+    <h4>Adicionar Comentário</h4>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <form asp-action="AdicionarComentario" asp-controller="Comentarios">
+            <input type="hidden" asp-for="IdReview" />
+            <div class="form-group">
+                <label for="Descricao">Comentário:</label>
+                <textarea class="form-control" id="Descricao" name="Descricao"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+    }
+    else
+    {
+        <p>Faça login para adicionar um comentário.</p>
+    }
 </div>

@@ -7,6 +7,7 @@
 
 <h1>Index de Livros</h1>
 
+@* Apenas Administradores e Autores podem ver esta opção *@
 @if (User.Identity.IsAuthenticated && (User.IsInRole("Administrador") || User.IsInRole("Autor")))
 {
     <p>
@@ -50,7 +51,7 @@
                 @Html.DisplayFor(modelItem => item.AnoPublicacao)
             </td>
             <td>
-                @* Apresentação das Opções de "Edit" e "Delete" apenas a Autores associados ao Livro ou Admins *@
+                @* Apresentação das Opções de "Edit" e "Delete" apenas a Autores ou Admins *@
                 @if (User.Identity.IsAuthenticated && (User.IsInRole("Autor") || User.IsInRole("Administrador")))
                 {
                     <text>

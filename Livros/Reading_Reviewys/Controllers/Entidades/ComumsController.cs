@@ -9,6 +9,9 @@ namespace Reading_Reviewys.Controllers
     [Authorize]
     public class ComumsController : Controller
     {
+        /// <summary>
+        /// Objeto representativo da BD
+        /// </summary>
         private readonly ApplicationDbContext _context;
 
         public ComumsController(ApplicationDbContext context)
@@ -39,6 +42,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Caso em que o Comum existe, devolve-se a View com os seus dados
             return View(comum);
         }
 
@@ -59,8 +63,8 @@ namespace Reading_Reviewys.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Atribuição de valores 
-                comum.Data_Entrada = DateOnly.FromDateTime(DateTime.Now); ;
+                // Atribuição de valores
+                comum.Data_Entrada = DateOnly.FromDateTime(DateTime.Now);
                 comum.Role = "Comum";
 
                 // Adição do Comum e salvaguarda dos seus dados na BD
@@ -70,6 +74,8 @@ namespace Reading_Reviewys.Controllers
                 // Regresso ao Index
                 return RedirectToAction(nameof(Index));
             }
+
+            // Caso o Model seja inválido, devolve-se a View com os dados inseridos
             return View(comum);
         }
 
@@ -87,6 +93,7 @@ namespace Reading_Reviewys.Controllers
             {
                 return NotFound();
             }
+
             return View(comum);
         }
 
@@ -113,6 +120,7 @@ namespace Reading_Reviewys.Controllers
                     {
                         return NotFound();
                     }
+
                     // Atualização dos atributos editáveis
                     atualComum.Username = comum.Username;
                     atualComum.Imagem_Perfil = comum.Imagem_Perfil;
@@ -126,16 +134,20 @@ namespace Reading_Reviewys.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
+                    // Caso em que o Comum não existe e devolve-se a página de "NotFound"
                     if (!ComumExists(comum.IdUser))
                     {
                         return NotFound();
                     }
+                    // Caso em que o Comum existe mas houve lançamento de uma exceção
                     else
                     {
                         throw;
                     }
                 }
             }
+
+            // Caso o Model seja inválido, devolve-se a View com os dados inseridos
             return View(comum);
         }
 
@@ -155,6 +167,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Caso o Comum não seja encontrado, devolve-se a mesma View
             return View(comum);
         }
 
@@ -174,6 +187,11 @@ namespace Reading_Reviewys.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Verifica se um Comum existe na BD
+        /// </summary>
+        /// <param name="id">ID do Comum</param>
+        /// <returns>Verdadeiro se o Comum existir, Falso caso contrário</returns>
         private bool ComumExists(int id)
         {
             return _context.Comum.Any(e => e.IdUser == id);

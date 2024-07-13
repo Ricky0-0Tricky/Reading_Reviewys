@@ -12,12 +12,19 @@ namespace Reading_Reviewys.Controllers
     [Authorize(Roles = "Administrador")]
     public class UtilizadorController : Controller
     {
+        // <summary>
+        /// Objeto representativo da BD
+        /// </summary>
         private readonly ApplicationDbContext _context;
 
+
+        // <summary>
+        /// Objeto para interagir com os dados da pessoa autenticada
+        /// </summary>
         private readonly UserManager<IdentityUser> _userManager;
 
         /// <summary>
-        /// Objecto que contém os dados do Servidor
+        /// Objeto que contém os dados do Servidor
         /// </summary>
         private readonly IWebHostEnvironment _webHostEnvironment;
 
@@ -548,6 +555,11 @@ namespace Reading_Reviewys.Controllers
             }
         }
 
+        /// <summary>
+        /// Verifica se um Utilizador existe na BD
+        /// </summary>
+        /// <param name="id">ID do Utilizador</param>
+        /// <returns>Verdadeiro se o Utilizador existir, Falso caso contrário</returns>
         private bool UtilizadorExists(int id)
         {
             return _context.Utilizador.Any(e => e.IdUser == id);

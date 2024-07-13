@@ -39,6 +39,8 @@
         </dd>
     </dl>
 </div>
+
+@* Só os Administradores podem ver esta opção *@
 <div>
     @if(User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
     {
