@@ -9,6 +9,9 @@ namespace Reading_Reviewys.Controllers
     [Authorize]
     public class AdminsController : Controller
     {
+        /// <summary>
+        /// Objeto representativo da BD
+        /// </summary>
         private readonly ApplicationDbContext _context;
 
         public AdminsController(ApplicationDbContext context)
@@ -19,6 +22,7 @@ namespace Reading_Reviewys.Controllers
         // GET: Admins
         public async Task<IActionResult> Index()
         {
+            // Retorna a lista de Admins
             return View(await _context.Admin.ToListAsync());
         }
 
@@ -37,6 +41,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Caso em que o Admin existe, devolve-se a View com os seus dados
             return View(admin);
         }
 
@@ -58,7 +63,7 @@ namespace Reading_Reviewys.Controllers
             if (ModelState.IsValid)
             {
                 // Atribuição de valores ao Admin
-                admin.Data_Entrada = DateOnly.FromDateTime(DateTime.Now); ;
+                admin.Data_Entrada = DateOnly.FromDateTime(DateTime.Now);
                 admin.Role = "Administrador";
 
                 // Adição do Admin e salvaguarda dos seus dados na BD
@@ -68,6 +73,8 @@ namespace Reading_Reviewys.Controllers
                 // Regresso ao Index
                 return RedirectToAction(nameof(Index));
             }
+
+            // Caso o Model seja inválido, devolve-se a View com os dados inseridos
             return View(admin);
         }
 
@@ -85,6 +92,7 @@ namespace Reading_Reviewys.Controllers
             {
                 return NotFound();
             }
+
             return View(admin);
         }
 
@@ -105,7 +113,7 @@ namespace Reading_Reviewys.Controllers
             {
                 try
                 {
-                    // Tenta encontrar o Admin a editar através do seu ID
+                    // Tenta encontrar o Admin a editar através do seu id
                     var atualAdmin = await _context.Admin.FindAsync(id);
                     if (atualAdmin == null)
                     {
@@ -121,21 +129,25 @@ namespace Reading_Reviewys.Controllers
                     _context.Update(atualAdmin);
                     await _context.SaveChangesAsync();
 
-                    // Regesso ao Index
+                    // Regresso ao Index
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
+                    // Caso em que o Admin não existe e devolve-se a página de "NotFound"
                     if (!AdminExists(admin.IdUser))
                     {
                         return NotFound();
                     }
+                    // Caso em que o Admin existe mas houve lançamento de uma exceção
                     else
                     {
                         throw;
                     }
                 }
             }
+
+            // Caso o Model seja inválido, devolve-se a View com os dados inseridos
             return View(admin);
         }
 
@@ -155,6 +167,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Caso o Admin não seja encontrado, devolve-se a mesma View
             return View(admin);
         }
 
@@ -174,6 +187,11 @@ namespace Reading_Reviewys.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Verifica se um Admin existe na BD
+        /// </summary>
+        /// <param name="id">ID do Admin</param>
+        /// <returns>Verdadeiro se o Admin existir, Falso caso contrário</returns>
         private bool AdminExists(int id)
         {
             return _context.Admin.Any(e => e.IdUser == id);

@@ -3,6 +3,9 @@
 
 @{
     ViewData["Title"] = "Detalhes do Livro";
+
+    // Obter o UserID do Utilizador
+    var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
 <h1>Detalhes do Livro</h1>
@@ -41,6 +44,7 @@
         <dt class="col-sm-2">
             Lista de Autores
         </dt>
+        @* Enumeração dos Autores do Livro *@
         <dd class="col-sm-10">
             <ul>
                 @if (!Model.ListaAutores.Any())
@@ -65,6 +69,7 @@
     </dl>
 </div>
 
+@* Apenas Administradores podem ver esta opção *@
 <div>
     @if (User.Identity.IsAuthenticated && (User.IsInRole("Administrador")))
     {
@@ -89,6 +94,16 @@
                             <p class="card-text">@review.DescricaoReview</p>
                             <small class="text-muted">Publicada: @review.DataAlteracao</small>
                             <a asp-action="Details" asp-controller="Reviews" asp-route-id="@review.IdReview">Ver Detalhes</a>
+
+                            @if (User.Identity.IsAuthenticated && userID == review.Utilizador.UserID)
+                            {
+                                <div class="mt-2">
+                                    <a asp-action="Edit" asp-controller="Reviews" asp-route-id="@review.IdReview" class="btn btn-sm btn-warning">Editar</a>
+                                    <form asp-action="Delete" asp-controller="Reviews" asp-route-id="@review.IdReview" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                                    </form>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -100,5 +115,23 @@ else
 {
     <div class="alert alert-info">
         Nenhuma review disponível para este livro.
+    </div>
+}
+
+@* Formulário para adicionar nova review se não houver nenhuma *@
+@if (User.Identity.IsAuthenticated && (Model.ListaPublicacao == null || !Model.ListaPublicacao.Any()))
+{
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4>Adicionar Review</h4>
+            <form asp-action="Create" asp-controller="Reviews">
+                <input type="hidden" name="LivroFK" value="@Model.IdLivro" />
+                <div class="form-group">
+                    <label for="DescricaoReview">Descrição da Review:</label>
+                    <textarea class="form-control" id="DescricaoReview" name="DescricaoReview" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar</button>
+            </form>
+        </div>
     </div>
 }

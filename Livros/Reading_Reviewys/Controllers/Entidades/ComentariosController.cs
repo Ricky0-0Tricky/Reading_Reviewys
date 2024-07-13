@@ -5,16 +5,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Reading_Reviewys.Data;
 using Reading_Reviewys.Models;
-using System.Security.Claims;
-using System.Linq;
-using System.Threading.Tasks;
-using System;
 
 namespace Reading_Reviewys.Controllers
 {
     public class ComentariosController : Controller
     {
+        // <summary>
+        /// Objeto representativo da BD
+        /// </summary>
         private readonly ApplicationDbContext _context;
+
+        // <summary>
+        /// Objeto para interagir com os dados da pessoa autenticada
+        /// </summary>
         private readonly UserManager<IdentityUser> _userManager;
 
         public ComentariosController(ApplicationDbContext context, UserManager<IdentityUser> userManager)

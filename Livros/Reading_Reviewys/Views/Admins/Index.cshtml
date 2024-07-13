@@ -42,6 +42,8 @@
                          title="@Html.DisplayFor(modelItem => item.Imagem_Perfil)"
                          width="75px" />
             </td>
+
+            @* Só os Administradores podem ver estas opções *@
             <td>
                     @if(User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
                     {

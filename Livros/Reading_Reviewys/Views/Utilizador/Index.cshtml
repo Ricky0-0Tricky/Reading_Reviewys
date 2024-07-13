@@ -6,6 +6,7 @@
 
 <h1>Index dos Utilizadores</h1>
 
+@* Apenas Administradores podem ver esta opção *@
 @if(User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
 {
     <p>
@@ -72,6 +73,8 @@
                          title="@Html.DisplayFor(modelItem => item.Imagem_Perfil)"
                          width="75px" />
                 </td>
+
+                @* Apenas Administradores podem ver estas opções *@
                 <td>
                     @if(User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
                     {

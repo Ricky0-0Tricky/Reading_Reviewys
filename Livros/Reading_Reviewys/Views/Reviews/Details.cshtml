@@ -8,7 +8,6 @@
     var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
-@* *@
 <h1>Detalhes da Review</h1>
 
 <div>
@@ -49,7 +48,6 @@
     {
         <a asp-action="Edit" asp-route-id="@Model?.IdReview">Editar</a>
     }
-    <a asp-action="Index">Regressar à listagem</a>
 </div>
 
 <hr />
@@ -66,9 +64,18 @@
                     <p>@comentario.Descricao</p>
                     <small>
                         Publicado pelo user: <a asp-action="Details" asp-controller="Utilizador" asp-route-id="@comentario.CriadorComentarioFK">
-                            @comentario.CriadorComentarioFK                                             
+                            @comentario.CriadorComentarioFK
                         </a> em @comentario.Data
                     </small>
+                    @if (User.Identity.IsAuthenticated && userID == comentario.CriadorComentario.UserID)
+                    {
+                        <div class="mt-2">
+                            <a asp-action="Edit" asp-controller="Comentarios" asp-route-id="@comentario.Id" class="btn btn-sm btn-warning">Editar</a>
+                            <form asp-action="Delete" asp-controller="Comentarios" asp-route-id="@comentario.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    }
                 </li>
             }
         </ul>

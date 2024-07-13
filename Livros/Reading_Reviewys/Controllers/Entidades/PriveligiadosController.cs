@@ -9,6 +9,9 @@ namespace Reading_Reviewys.Controllers
     [Authorize]
     public class PriveligiadosController : Controller
     {
+        /// <summary>
+        /// Objeto representativo da BD
+        /// </summary>
         private readonly ApplicationDbContext _context;
 
         public PriveligiadosController(ApplicationDbContext context)
@@ -20,6 +23,7 @@ namespace Reading_Reviewys.Controllers
         [Authorize(Roles = "Priveligiado,Administrador")]
         public async Task<IActionResult> Index()
         {
+            // Retorna a lista de Priveligiados
             return View(await _context.Priveligiado.ToListAsync());
         }
 
@@ -39,6 +43,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Caso em que o Priveligiado existe, devolve-se a View com os seus dados
             return View(priveligiado);
         }
 
@@ -59,18 +64,20 @@ namespace Reading_Reviewys.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Atribuição de valores 
-                priveligiado.Data_Entrada = DateOnly.FromDateTime(DateTime.Now); 
+                // Atribuição de valores
+                priveligiado.Data_Entrada = DateOnly.FromDateTime(DateTime.Now);
                 priveligiado.Data_Subscricao = DateOnly.FromDateTime(DateTime.Now);
                 priveligiado.Role = "Priveligiado";
 
-                // Adição do Admin e salvaguarda dos seus dados na BD
+                // Adição do Priveligiado e salvaguarda dos seus dados na BD
                 _context.Add(priveligiado);
                 await _context.SaveChangesAsync();
 
                 // Regresso ao Index
                 return RedirectToAction(nameof(Index));
             }
+
+            // Caso o Model seja inválido, devolve-se a View com os dados inseridos
             return View(priveligiado);
         }
 
@@ -88,6 +95,7 @@ namespace Reading_Reviewys.Controllers
             {
                 return NotFound();
             }
+
             return View(priveligiado);
         }
 
@@ -114,6 +122,7 @@ namespace Reading_Reviewys.Controllers
                     {
                         return NotFound();
                     }
+
                     // Atualização dos atributos editáveis
                     atualPriveligiado.Username = priveligiado.Username;
                     atualPriveligiado.Imagem_Perfil = priveligiado.Imagem_Perfil;
@@ -127,19 +136,22 @@ namespace Reading_Reviewys.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
+                    // Caso em que o Priveligiado não existe e devolve-se a página de "NotFound"
                     if (!PriveligiadoExists(priveligiado.IdUser))
                     {
                         return NotFound();
                     }
+                    // Caso em que o Priveligiado existe mas houve lançamento de uma exceção
                     else
                     {
                         throw;
                     }
                 }
             }
+
+            // Caso o Model seja inválido, devolve-se a View com os dados inseridos
             return View(priveligiado);
         }
-
 
         // GET: Priveligiados/Delete/5
         [Authorize(Roles = "Administrador")]
@@ -157,6 +169,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Caso o Priveligiado não seja encontrado, devolve-se a mesma View
             return View(priveligiado);
         }
 
@@ -176,6 +189,11 @@ namespace Reading_Reviewys.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Verifica se um Priveligiado existe na BD
+        /// </summary>
+        /// <param name="id">ID do Priveligiado</param>
+        /// <returns>Verdadeiro se o Priveligiado existir, Falso caso contrário</returns>
         private bool PriveligiadoExists(int id)
         {
             return _context.Priveligiado.Any(e => e.IdUser == id);
