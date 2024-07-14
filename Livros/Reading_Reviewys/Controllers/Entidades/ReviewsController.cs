@@ -53,6 +53,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Obter as reviews realizadas a um dado livro
             var reviews = await _context.Reviews
                 .Include(r => r.Livro)
                 .Include(r => r.ListaComentarios)
@@ -84,7 +85,7 @@ namespace Reading_Reviewys.Controllers
             // Prenchimento da Data de Alteração como o DataTime atual
             review.DataAlteracao = DateOnly.FromDateTime(DateTime.Now);
 
-            // Captura do ID do User
+            // Obter ID da pessoa autenticada
             var userId = _userManager.GetUserId(User);
 
             // Identificação do User com o seu respetivo ID
@@ -112,10 +113,10 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
-            // Captura do ID do User
+            // Obter ID da pessoa autenticada
             var userId = _userManager.GetUserId(User);
 
-            // Reviews do User
+            // Obter Reviews do Utilizador
             var review = await _context.Reviews
                                        .Where(r => r.IdReview == id && r.Utilizador.UserID == userId)
                                        .FirstOrDefaultAsync();
@@ -188,7 +189,7 @@ namespace Reading_Reviewys.Controllers
         [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public async Task<IActionResult> Delete(int? id)
         {
-            // obter ID da pessoa autenticada
+            // Obter ID da pessoa autenticada
             var userId = _userManager.GetUserId(User);
 
             if (id == null)
@@ -196,6 +197,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Obter Review a ser apagada
             var reviews = await _context.Reviews
                 .Include(r => r.Livro)
                 .Include(r => r.Utilizador)
@@ -215,17 +217,18 @@ namespace Reading_Reviewys.Controllers
         [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var reviews = await _context.Reviews.FindAsync(id);
-            if (reviews != null)
+            // Obter Review a ser apagada
+            var review = await _context.Reviews.FindAsync(id);
+            if (review != null)
             {
                 // Captura da FK do Livro antes do apagamento da review
-                var livroId = reviews.LivroFK;
+                var livroId = review.LivroFK;
 
                 // Apagamento da Review e salvaguarda para a BD
-                _context.Reviews.Remove(reviews);
+                _context.Reviews.Remove(review);
                 await _context.SaveChangesAsync();
 
-                // Redirect para a página do livro
+                // Redirect para a página do livro onde a mesma se enquadrava
                 return RedirectToAction("Details", "Livros", new { id = livroId });
             }
             return RedirectToAction(nameof(Index));

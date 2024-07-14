@@ -50,6 +50,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Obter atributos relativos ao Livro
             var livro = await _context.Livro
                 .Include(l => l.ListaAutores)
                 .Include(l => l.ListaPublicacao)
@@ -82,23 +83,31 @@ namespace Reading_Reviewys.Controllers
         [Authorize(Roles = "Autor,Administrador")]
         public async Task<IActionResult> Create([Bind("IdLivro,Titulo,Genero,AnoPublicacao")] Livro livro, int[] listaIdsAutores, IFormFile ImagemCapa)
         {
+            // Criação de uma lista de autores
             var listaAutores = new List<Autor>();
+            
+            // Iterar sobre todos os IDs na lista de IDs de Autores
             foreach (var autId in listaIdsAutores)
             {
+                // Captura de um autor na BD
                 var aut = _context.Autor.FirstOrDefault(p => p.IdUser == autId);
 
+                // Caso um seja encontrado adiciona-se à lista
                 if (aut != null)
                 {
                     listaAutores.Add(aut);
                 }
             }
 
+            // Caso em que existem autores do livro
             if (listaAutores != null)
             {
+                // Determinação dos Autores encontrados para os Autores do Livro
                 livro.ListaAutores = listaAutores;
             }
             else
             {
+                // Senão retorna-se a View do Livro
                 return View(livro);
             }
 
@@ -141,6 +150,7 @@ namespace Reading_Reviewys.Controllers
                     }
                 }
 
+                // Adição do Livro à BD
                 _context.Add(livro);
                 await _context.SaveChangesAsync();
 
@@ -179,6 +189,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Encontrar Livro a ser editado
             var livro = await _context.Livro.FindAsync(id);
             if (livro == null)
             {
@@ -204,17 +215,20 @@ namespace Reading_Reviewys.Controllers
             {
                 try
                 {
+                    // Update do Livro na BD
                     _context.Update(livro);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
+                    // Caso em que o Livro não existe
                     if (!LivroExists(livro.IdLivro))
                     {
                         return NotFound();
                     }
                     else
                     {
+                        // Caso em que o Livro existe, mas algo correu mal
                         throw;
                     }
                 }
@@ -232,6 +246,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Encontrar o livro a ser apagado
             var livro = await _context.Livro
                 .FirstOrDefaultAsync(m => m.IdLivro == id);
             if (livro == null)
@@ -248,12 +263,14 @@ namespace Reading_Reviewys.Controllers
         [Authorize(Roles = "Autor,Administrador")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            // Encontrar o Livro a ser apagado
             var livro = await _context.Livro.FindAsync(id);
             if (livro != null)
             {
                 _context.Livro.Remove(livro);
             }
 
+            // Salvar as alterações realizadas
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

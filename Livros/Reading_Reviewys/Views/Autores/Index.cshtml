@@ -58,7 +58,7 @@
                             <a asp-action="Delete" asp-route-id="@item.IdUser">Apagar</a>
                         </text>
                     }
-                <a asp-action="Details" asp-route-id="@item.IdUser">Detalhes</a> 
+                <a asp-action="Details" asp-controller="Utilizador" asp-route-id="@item.IdUser">Detalhes</a> 
             </td>
         </tr>
 }

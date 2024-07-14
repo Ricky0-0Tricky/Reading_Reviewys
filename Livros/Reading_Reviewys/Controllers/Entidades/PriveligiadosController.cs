@@ -6,7 +6,7 @@ using Reading_Reviewys.Models;
 
 namespace Reading_Reviewys.Controllers
 {
-    [Authorize]
+    [Authorize(Roles="Administrador")]
     public class PriveligiadosController : Controller
     {
         /// <summary>
@@ -20,7 +20,6 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Priveligiados
-        [Authorize(Roles = "Priveligiado,Administrador")]
         public async Task<IActionResult> Index()
         {
             // Retorna a lista de Priveligiados
@@ -28,7 +27,6 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Priveligiados/Details/5
-        [Authorize(Roles = "Priveligiado,Administrador")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -48,7 +46,6 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Priveligiados/Create
-        [Authorize(Roles = "Administrador")]
         public IActionResult Create()
         {
             return View();
@@ -59,7 +56,6 @@ namespace Reading_Reviewys.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create([Bind("Data_Subscricao,IdUser,Username,Role,Data_Entrada,Imagem_Perfil")] Priveligiado priveligiado)
         {
             if (ModelState.IsValid)
@@ -82,7 +78,6 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Priveligiados/Edit/5
-        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -104,7 +99,6 @@ namespace Reading_Reviewys.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id, [Bind("Data_Subscricao,IdUser,Username,Imagem_Perfil")] Priveligiado priveligiado)
         {
             if (id != priveligiado.IdUser)
@@ -154,7 +148,6 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Priveligiados/Delete/5
-        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -176,7 +169,6 @@ namespace Reading_Reviewys.Controllers
         // POST: Priveligiados/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var priveligiado = await _context.Priveligiado.FindAsync(id);

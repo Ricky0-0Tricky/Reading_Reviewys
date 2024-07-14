@@ -489,6 +489,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Obter ID do Utilizador a ser apagado
             var utilizador = await _context.Utilizador
                 .FirstOrDefaultAsync(m => m.IdUser == id);
             if (utilizador == null)
@@ -504,7 +505,7 @@ namespace Reading_Reviewys.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // Captura do utilizador segundo o seu id
+            // Captura do Utilizador segundo o seu ID
             var utilizador = await _context.Utilizador.FindAsync(id);
 
             // Caso não seja encontrado nenhum utilizador retorna-se a página de NotFound
@@ -516,38 +517,38 @@ namespace Reading_Reviewys.Controllers
             // Tentativa de apagar o utilizador das tabelas "Utilizador" e "AspNetUsers"
             try
             {
-                // Apagar os comentários do utilizador
+                // Apagar os Comentários do Utilizador
                 var comentarios = await _context.Comentarios
                                             .Where(c => c.CriadorComentarioFK == utilizador.IdUser)
                                             .ToListAsync();
                 _context.Comentarios.RemoveRange(comentarios);
 
-                // Apagar reviews do utilizador
+                // Apagar Reviews do Utilizador
                 var reviews = await _context.Reviews
                                             .Where(r => r.UtilizadorFK == utilizador.IdUser)
                                             .ToListAsync();
                 _context.Reviews.RemoveRange(reviews);
 
-                // Salvar as alterações realizadas (Apagar comentários e reviews do utilizador)
+                // Salvar as alterações realizadas (Apagar Comentários e Reviews do Utilizador)
                 await _context.SaveChangesAsync();
 
-                // Apagar o utilizador da tabela "Utilizador"
+                // Apagar o Utilizador da tabela "Utilizador"
                 _context.Utilizador.Remove(utilizador);
                 await _context.SaveChangesAsync();
 
-                // Apagar o utilizador da tabela "AspNetUsers"
+                // Apagar o Utilizador da tabela "AspNetUsers"
                 var utilizadorIdentity = await _userManager.FindByIdAsync(utilizador.UserID);
 
-                // Caso não seja encontrado nenhum utilizador com o dado "UserID" retorna-se a página de NotFound
+                // Caso não seja encontrado nenhum Utilizador com o dado "UserID" retorna-se a página de NotFound
                 if (utilizadorIdentity == null)
                 {
                     return NotFound();
                 }
 
-                // Tentativa de apagar o utilizador da tabela "AspNetUsers"
+                // Tentativa de apagar o Utilizador da tabela "AspNetUsers"
                 var apagaIdent = await _userManager.DeleteAsync(utilizadorIdentity);
 
-                // Caso não tenha sido possível apagar o utilizador da tabela "AspNetUsers" anuncia-se falhanço
+                // Caso não tenha sido possível apagar o Utilizador da tabela "AspNetUsers" anuncia-se falhanço
                 if (!apagaIdent.Succeeded)
                 {
                     return BadRequest("Falhanço ao tentar apagar o utilizador da tabela AspNetUsers.");

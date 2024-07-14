@@ -19,7 +19,7 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Autores
-        [Authorize(Roles = "Autor, Administrador")]
+        [Authorize(Roles = "Priveligiado, Autor, Administrador")]
         public async Task<IActionResult> Index()
         {
             // Retorna a lista de Autores
