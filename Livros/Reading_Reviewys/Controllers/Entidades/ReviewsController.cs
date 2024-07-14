@@ -45,6 +45,9 @@ namespace Reading_Reviewys.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
+            // Obter ID da pessoa autenticada
+            ViewData["UserID"] = _userManager.GetUserId(User);
+
             if (id == null)
             {
                 return NotFound();

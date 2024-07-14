@@ -57,6 +57,14 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Reviews e Comentários do Utilizador
+            var reviews = await _context.Reviews.Where(r => r.UtilizadorFK == id).ToListAsync();
+            var comentarios = await _context.Comentarios.Where(c => c.CriadorComentarioFK == id).ToListAsync();
+
+            // View Datas para passar as reviews e comentários do Utilizador
+            ViewData["Reviews"] = reviews;
+            ViewData["Comentarios"] = comentarios;
+
             return View(utilizador);
         }
 

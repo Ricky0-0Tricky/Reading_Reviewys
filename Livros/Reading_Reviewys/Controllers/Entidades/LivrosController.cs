@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Reading_Reviewys.Data;
@@ -18,11 +19,17 @@ namespace Reading_Reviewys.Controllers
         /// </summary>
         private readonly IWebHostEnvironment _webHostEnvironment;
 
+        // <summary>
+        /// Objeto para interagir com os dados da pessoa autenticada
+        /// </summary>
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public LivrosController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+
+        public LivrosController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _userManager = userManager;
         }
 
         // GET: Livros
@@ -35,6 +42,9 @@ namespace Reading_Reviewys.Controllers
         // GET: Livros/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            // Obter ID da pessoa autenticada
+            ViewData["UserID"] = _userManager.GetUserId(User);
+
             if (id == null)
             {
                 return NotFound();

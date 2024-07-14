@@ -78,6 +78,9 @@ namespace Reading_Reviewys.Controllers
             comentario.Data = DateTime.Now;
             var userId = _userManager.GetUserId(User);
 
+            comentario.CriadorComentario = await _context.Utilizador
+                .Where(r => r.UserID == userId)
+                .FirstOrDefaultAsync();
             comentario.CriadorComentarioFK = await _context.Utilizador
                 .Where(r => r.UserID == userId)
                 .Select(r => r.IdUser)
@@ -229,6 +232,7 @@ namespace Reading_Reviewys.Controllers
         [Authorize]
         public async Task<IActionResult> AdicionarComentario(int IdReview, string Descricao)
         {
+            // Obter o ID da pessoa autenticada
             var userId = _userManager.GetUserId(User);
 
             if (string.IsNullOrEmpty(Descricao))
@@ -237,13 +241,20 @@ namespace Reading_Reviewys.Controllers
                 return RedirectToAction("Details", "Reviews", new { id = IdReview });
             }
 
+            // Fetch do Utilizador na BD
+            var utilizador = await _context.Utilizador
+                .FirstOrDefaultAsync(u => u.UserID == userId);
+
+            if (utilizador == null)
+            {
+                // Caso em que o Utilizador não existe
+                return NotFound("Utilizador Desconhecido.");
+            }
+
             var comentario = new Comentarios
             {
                 ReviewFK = IdReview,
-                CriadorComentarioFK = await _context.Utilizador
-                    .Where(u => u.UserID == userId)
-                    .Select(u => u.IdUser)
-                    .FirstOrDefaultAsync(),
+                CriadorComentarioFK = utilizador.IdUser,
                 Descricao = Descricao,
                 Data = DateTime.Now
             };
