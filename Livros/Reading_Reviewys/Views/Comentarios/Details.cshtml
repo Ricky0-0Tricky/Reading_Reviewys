@@ -42,10 +42,11 @@
         </dt>
     </dl>
 </div>
+
+@* Só os Administradores podem ver esta opção*@
 <div>
     @if (User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
     {
         <a asp-action="Edit" asp-route-id="@Model?.Id">Editar</a>
     }
-    <a asp-action="Index">Regressar à listagem</a>
 </div>

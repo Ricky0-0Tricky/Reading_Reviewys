@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Reading_Reviewys.Data;
@@ -18,14 +19,21 @@ namespace Reading_Reviewys.Controllers
         /// </summary>
         private readonly IWebHostEnvironment _webHostEnvironment;
 
+        // <summary>
+        /// Objeto para interagir com os dados da pessoa autenticada
+        /// </summary>
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public LivrosController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+
+        public LivrosController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _userManager = userManager;
         }
 
         // GET: Livros
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Livro.ToListAsync());
@@ -34,13 +42,19 @@ namespace Reading_Reviewys.Controllers
         // GET: Livros/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            // Obter ID da pessoa autenticada
+            ViewData["UserID"] = _userManager.GetUserId(User);
+
             if (id == null)
             {
                 return NotFound();
             }
 
+            // Obter atributos relativos ao Livro
             var livro = await _context.Livro
                 .Include(l => l.ListaAutores)
+                .Include(l => l.ListaPublicacao)
+                .ThenInclude(l => l.Utilizador)
                 .FirstOrDefaultAsync(m => m.IdLivro == id);
             if (livro == null)
             {
@@ -52,7 +66,7 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Livros/Create
-        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
+        [Authorize(Roles = "Autor,Administrador")]
         public IActionResult Create()
         {
             // Obtenção dos Autores existentes na BD
@@ -66,26 +80,34 @@ namespace Reading_Reviewys.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
+        [Authorize(Roles = "Autor,Administrador")]
         public async Task<IActionResult> Create([Bind("IdLivro,Titulo,Genero,AnoPublicacao")] Livro livro, int[] listaIdsAutores, IFormFile ImagemCapa)
         {
+            // Criação de uma lista de autores
             var listaAutores = new List<Autor>();
+            
+            // Iterar sobre todos os IDs na lista de IDs de Autores
             foreach (var autId in listaIdsAutores)
             {
+                // Captura de um autor na BD
                 var aut = _context.Autor.FirstOrDefault(p => p.IdUser == autId);
 
+                // Caso um seja encontrado adiciona-se à lista
                 if (aut != null)
                 {
                     listaAutores.Add(aut);
                 }
             }
 
+            // Caso em que existem autores do livro
             if (listaAutores != null)
             {
+                // Determinação dos Autores encontrados para os Autores do Livro
                 livro.ListaAutores = listaAutores;
             }
             else
             {
+                // Senão retorna-se a View do Livro
                 return View(livro);
             }
 
@@ -128,6 +150,7 @@ namespace Reading_Reviewys.Controllers
                     }
                 }
 
+                // Adição do Livro à BD
                 _context.Add(livro);
                 await _context.SaveChangesAsync();
 
@@ -154,100 +177,113 @@ namespace Reading_Reviewys.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(livro); 
+            return View(livro);
         }
 
         // GET: Livros/Edit/5
-        [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
-            public async Task<IActionResult> Edit(int? id)
+        [Authorize(Roles = "Autor,Administrador")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
             {
-                if (id == null)
-                {
-                    return NotFound();
-                }
-
-                var livro = await _context.Livro.FindAsync(id);
-                if (livro == null)
-                {
-                    return NotFound();
-                }
-                return View(livro);
+                return NotFound();
             }
 
-            // POST: Livros/Edit/5
-            // To protect from overposting attacks, enable the specific properties you want to bind to.
-            // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
-            public async Task<IActionResult> Edit(int id, [Bind("IdLivro,Capa,Titulo,Genero,AnoPublicacao")] Livro livro)
+            // Encontrar Livro a ser editado
+            var livro = await _context.Livro.FindAsync(id);
+            if (livro == null)
             {
-                if (id != livro.IdLivro)
-                {
-                    return NotFound();
-                }
+                return NotFound();
+            }
+            return View(livro);
+        }
 
-                if (ModelState.IsValid)
+        // POST: Livros/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Autor,Administrador")]
+        public async Task<IActionResult> Edit(int id, [Bind("IdLivro,Capa,Titulo,Genero,AnoPublicacao")] Livro livro)
+        {
+            if (id != livro.IdLivro)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
                 {
-                    try
+                    // Update do Livro na BD
+                    _context.Update(livro);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    // Caso em que o Livro não existe
+                    if (!LivroExists(livro.IdLivro))
                     {
-                        _context.Update(livro);
-                        await _context.SaveChangesAsync();
+                        return NotFound();
                     }
-                    catch (DbUpdateConcurrencyException)
+                    else
                     {
-                        if (!LivroExists(livro.IdLivro))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
+                        // Caso em que o Livro existe, mas algo correu mal
+                        throw;
                     }
-                    return RedirectToAction(nameof(Index));
                 }
-                return View(livro);
-            }
-
-            // GET: Livros/Delete/5
-            [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
-            public async Task<IActionResult> Delete(int? id)
-            {
-                if (id == null)
-                {
-                    return NotFound();
-                }
-
-                var livro = await _context.Livro
-                    .FirstOrDefaultAsync(m => m.IdLivro == id);
-                if (livro == null)
-                {
-                    return NotFound();
-                }
-
-                return View(livro);
-            }
-
-            // POST: Livros/Delete/5
-            [HttpPost, ActionName("Delete")]
-            [ValidateAntiForgeryToken]
-            [Authorize(Roles = "Comum,Priveligiado,Autor,Administrador")]
-            public async Task<IActionResult> DeleteConfirmed(int id)
-            {
-                var livro = await _context.Livro.FindAsync(id);
-                if (livro != null)
-                {
-                    _context.Livro.Remove(livro);
-                }
-
-                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            return View(livro);
+        }
 
-            private bool LivroExists(int id)
+        // GET: Livros/Delete/5
+        [Authorize(Roles = "Autor,Administrador")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
             {
-                return _context.Livro.Any(e => e.IdLivro == id);
+                return NotFound();
             }
+
+            // Encontrar o livro a ser apagado
+            var livro = await _context.Livro
+                .FirstOrDefaultAsync(m => m.IdLivro == id);
+            if (livro == null)
+            {
+                return NotFound();
+            }
+
+            return View(livro);
+        }
+
+        // POST: Livros/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Autor,Administrador")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            // Encontrar o Livro a ser apagado
+            var livro = await _context.Livro.FindAsync(id);
+            if (livro != null)
+            {
+                _context.Livro.Remove(livro);
+            }
+
+            // Salvar as alterações realizadas
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        /// <summary>
+        /// Verifica se um Livro existe na BD
+        /// </summary>
+        /// <param name="id">ID do Livro</param>
+        /// <returns>Verdadeiro se o Livro existir, Falso caso contrário</returns>
+        private bool LivroExists(int id)
+        {
+            return _context.Livro.Any(e => e.IdLivro == id);
         }
     }
+}

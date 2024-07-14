@@ -12,12 +12,19 @@ namespace Reading_Reviewys.Controllers
     [Authorize(Roles = "Administrador")]
     public class UtilizadorController : Controller
     {
+        // <summary>
+        /// Objeto representativo da BD
+        /// </summary>
         private readonly ApplicationDbContext _context;
 
+
+        // <summary>
+        /// Objeto para interagir com os dados da pessoa autenticada
+        /// </summary>
         private readonly UserManager<IdentityUser> _userManager;
 
         /// <summary>
-        /// objecto que contém os dados do Servidor
+        /// Objeto que contém os dados do Servidor
         /// </summary>
         private readonly IWebHostEnvironment _webHostEnvironment;
 
@@ -49,6 +56,14 @@ namespace Reading_Reviewys.Controllers
             {
                 return NotFound();
             }
+
+            // Reviews e Comentários do Utilizador
+            var reviews = await _context.Reviews.Where(r => r.UtilizadorFK == id).ToListAsync();
+            var comentarios = await _context.Comentarios.Where(c => c.CriadorComentarioFK == id).ToListAsync();
+
+            // View Datas para passar as reviews e comentários do Utilizador
+            ViewData["Reviews"] = reviews;
+            ViewData["Comentarios"] = comentarios;
 
             return View(utilizador);
         }
@@ -130,10 +145,16 @@ namespace Reading_Reviewys.Controllers
                     // Link entre os Utilizadores de tabelas diferentes
                     utilizador.UserID = utilIdentity.Id;
 
+                    // Role do Utilizador
+                    var role = await _userManager.GetRolesAsync(utilIdentity);
+
                     // Criação do Utilizador na tabela "Utilizadores" segundo o Role escolhido e Atribuição de Permissões
                     switch (utilizador.Role)
                     {
                         case "Comum":
+                            // Remoção do role do Utilizador
+                            await _userManager.RemoveFromRolesAsync(utilIdentity, role);
+
                             await _userManager.AddToRoleAsync(utilIdentity, "Comum");
                             var comum = new Comum
                             {
@@ -147,6 +168,9 @@ namespace Reading_Reviewys.Controllers
                             _context.Add(comum);
                             break;
                         case "Priveligiado":
+                            // Remoção do role do Utilizador
+                            await _userManager.RemoveFromRolesAsync(utilIdentity, role);
+
                             await _userManager.AddToRoleAsync(utilIdentity, "Priveligiado");
                             var priveligiado = new Priveligiado
                             {
@@ -161,6 +185,9 @@ namespace Reading_Reviewys.Controllers
                             _context.Add(priveligiado);
                             break;
                         case "Autor":
+                            // Remoção do role do Utilizador
+                            await _userManager.RemoveFromRolesAsync(utilIdentity, role);
+
                             await _userManager.AddToRoleAsync(utilIdentity, "Autor");
                             var autor = new Autor
                             {
@@ -175,6 +202,9 @@ namespace Reading_Reviewys.Controllers
                             _context.Add(autor);
                             break;
                         case "Admin":
+                            // Remoção do role do Utilizador
+                            await _userManager.RemoveFromRolesAsync(utilIdentity, role);
+
                             await _userManager.AddToRoleAsync(utilIdentity, "Administrador");
                             var admin = new Admin
                             {
@@ -189,6 +219,9 @@ namespace Reading_Reviewys.Controllers
                             _context.Add(admin);
                             break;
                         default:
+                            // Remoção do role do Utilizador
+                            await _userManager.RemoveFromRolesAsync(utilIdentity, role);
+
                             await _userManager.AddToRoleAsync(utilIdentity, "Comum");
                             var utilErro = new Comum
                             {
@@ -456,6 +489,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Obter ID do Utilizador a ser apagado
             var utilizador = await _context.Utilizador
                 .FirstOrDefaultAsync(m => m.IdUser == id);
             if (utilizador == null)
@@ -471,7 +505,7 @@ namespace Reading_Reviewys.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // Captura do utilizador segundo o seu id
+            // Captura do Utilizador segundo o seu ID
             var utilizador = await _context.Utilizador.FindAsync(id);
 
             // Caso não seja encontrado nenhum utilizador retorna-se a página de NotFound
@@ -483,38 +517,38 @@ namespace Reading_Reviewys.Controllers
             // Tentativa de apagar o utilizador das tabelas "Utilizador" e "AspNetUsers"
             try
             {
-                // Apagar os comentários do utilizador
+                // Apagar os Comentários do Utilizador
                 var comentarios = await _context.Comentarios
                                             .Where(c => c.CriadorComentarioFK == utilizador.IdUser)
                                             .ToListAsync();
                 _context.Comentarios.RemoveRange(comentarios);
 
-                // Apagar reviews do utilizador
+                // Apagar Reviews do Utilizador
                 var reviews = await _context.Reviews
                                             .Where(r => r.UtilizadorFK == utilizador.IdUser)
                                             .ToListAsync();
                 _context.Reviews.RemoveRange(reviews);
 
-                // Salvar as alterações realizadas (Apagar comentários e reviews do utilizador)
+                // Salvar as alterações realizadas (Apagar Comentários e Reviews do Utilizador)
                 await _context.SaveChangesAsync();
 
-                // Apagar o utilizador da tabela "Utilizador"
+                // Apagar o Utilizador da tabela "Utilizador"
                 _context.Utilizador.Remove(utilizador);
                 await _context.SaveChangesAsync();
 
-                // Apagar o utilizador da tabela "AspNetUsers"
+                // Apagar o Utilizador da tabela "AspNetUsers"
                 var utilizadorIdentity = await _userManager.FindByIdAsync(utilizador.UserID);
 
-                // Caso não seja encontrado nenhum utilizador com o dado "UserID" retorna-se a página de NotFound
+                // Caso não seja encontrado nenhum Utilizador com o dado "UserID" retorna-se a página de NotFound
                 if (utilizadorIdentity == null)
                 {
                     return NotFound();
                 }
 
-                // Tentativa de apagar o utilizador da tabela "AspNetUsers"
+                // Tentativa de apagar o Utilizador da tabela "AspNetUsers"
                 var apagaIdent = await _userManager.DeleteAsync(utilizadorIdentity);
 
-                // Caso não tenha sido possível apagar o utilizador da tabela "AspNetUsers" anuncia-se falhanço
+                // Caso não tenha sido possível apagar o Utilizador da tabela "AspNetUsers" anuncia-se falhanço
                 if (!apagaIdent.Succeeded)
                 {
                     return BadRequest("Falhanço ao tentar apagar o utilizador da tabela AspNetUsers.");
@@ -530,6 +564,11 @@ namespace Reading_Reviewys.Controllers
             }
         }
 
+        /// <summary>
+        /// Verifica se um Utilizador existe na BD
+        /// </summary>
+        /// <param name="id">ID do Utilizador</param>
+        /// <returns>Verdadeiro se o Utilizador existir, Falso caso contrário</returns>
         private bool UtilizadorExists(int id)
         {
             return _context.Utilizador.Any(e => e.IdUser == id);

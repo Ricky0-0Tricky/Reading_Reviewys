@@ -108,7 +108,7 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
             /// Incorporação dos dados de um Comum
             /// no processo de registo de um novo utilizador
             /// </summary>
-            public Admin Comum { get; set; }
+            public Comum Comum { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -152,7 +152,7 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
 
                     if (Input.Comum == null)
                     {
-                        Input.Comum = new Admin();
+                        Input.Comum = new Comum();
                     }
 
                     // Guardar os dados do Comum
@@ -161,8 +161,7 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account
                         // Criar uma ligação entre a tabela dos Utilizadores
                         // (neste caso, um Comum) e a tabela de Autenticação
                         Input.Comum.Imagem_Perfil = "/default.jpg";
-                        Input.Comum.Role = "Admin";
-                        Input.Comum.Email = user.Email;
+                        Input.Comum.Role = "Comum";
                         Input.Comum.Data_Entrada = DateOnly.FromDateTime(DateTime.Now);
                         Input.Comum.Username = user.UserName;
                         Input.Comum.UserID = user.Id;

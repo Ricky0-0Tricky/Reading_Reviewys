@@ -35,6 +35,7 @@
                 <input asp-for="AnoPublicacao" class="form-control" />
                 <span asp-validation-for="AnoPublicacao" class="text-danger"></span>
             </div>
+            @* Enumeração dos Autores do Livro*@
             <div class="form-group">
                 <label class="control-label">Autores</label>
                 @foreach (var aut in (List<Autor>)ViewData["ListaAutores"] ?? Enumerable.Empty<Autor>())

@@ -8,6 +8,9 @@ namespace Reading_Reviewys.Controllers
 {
     public class AutoresController : Controller
     {
+        /// <summary>
+        /// Objeto representativo da BD
+        /// </summary>
         private readonly ApplicationDbContext _context;
 
         public AutoresController(ApplicationDbContext context)
@@ -16,9 +19,10 @@ namespace Reading_Reviewys.Controllers
         }
 
         // GET: Autores
-        [Authorize(Roles = "Autor, Administrador")]
+        [Authorize(Roles = "Priveligiado, Autor, Administrador")]
         public async Task<IActionResult> Index()
         {
+            // Retorna a lista de Autores
             return View(await _context.Autor.ToListAsync());
         }
 
@@ -38,6 +42,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Caso em que o Autor existe, devolve-se a View com os seus dados
             return View(autor);
         }
 
@@ -58,8 +63,8 @@ namespace Reading_Reviewys.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Atribuição de valores 
-                autor.Data_Entrada = DateOnly.FromDateTime(DateTime.Now); ;
+                // Atribuição de valores
+                autor.Data_Entrada = DateOnly.FromDateTime(DateTime.Now);
                 autor.Role = "Autor";
 
                 // Adição do Autor e salvaguarda dos seus dados na BD
@@ -69,6 +74,8 @@ namespace Reading_Reviewys.Controllers
                 // Regresso ao Index
                 return RedirectToAction(nameof(Index));
             }
+
+            // Caso o Model seja inválido, devolve-se a View com os dados inseridos
             return View(autor);
         }
 
@@ -86,6 +93,7 @@ namespace Reading_Reviewys.Controllers
             {
                 return NotFound();
             }
+
             return View(autor);
         }
 
@@ -117,7 +125,7 @@ namespace Reading_Reviewys.Controllers
                     atualAutor.Nome = autor.Nome;
                     atualAutor.Username = autor.Username;
                     atualAutor.Imagem_Perfil = autor.Imagem_Perfil;
-                    
+
                     // Update dos atributos editáveis e salvaguarda das alterações para a BD
                     _context.Update(atualAutor);
                     await _context.SaveChangesAsync();
@@ -127,16 +135,20 @@ namespace Reading_Reviewys.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
+                    // Caso em que o Autor não existe e devolve-se a página de "NotFound"
                     if (!AutorExists(autor.IdUser))
                     {
                         return NotFound();
                     }
+                    // Caso em que o Autor existe mas houve lançamento de uma exceção
                     else
                     {
                         throw;
                     }
                 }
             }
+
+            // Caso o Model seja inválido, devolve-se a View com os dados inseridos
             return View(autor);
         }
 
@@ -156,6 +168,7 @@ namespace Reading_Reviewys.Controllers
                 return NotFound();
             }
 
+            // Caso o Autor não seja encontrado, devolve-se a mesma View
             return View(autor);
         }
 
@@ -175,6 +188,11 @@ namespace Reading_Reviewys.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Verifica se um Autor existe na BD
+        /// </summary>
+        /// <param name="id">ID do Autor</param>
+        /// <returns>Verdadeiro se o Autor existir, Falso caso contrário</returns>
         private bool AutorExists(int id)
         {
             return _context.Autor.Any(e => e.IdUser == id);

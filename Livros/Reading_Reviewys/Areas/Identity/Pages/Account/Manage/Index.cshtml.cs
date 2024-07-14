@@ -1,87 +1,50 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
-
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Reading_Reviewys.Data;
 
-namespace Reading_Reviewys.Areas.Identity.Pages.Account.Manage
+namespace Reading_Reviewys.Pages
 {
     public class IndexModel : PageModel
     {
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public IndexModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+        public IndexModel(ApplicationDbContext context, UserManager<IdentityUser> userManager, IWebHostEnvironment webHostEnvironment)
         {
+            _context = context;
             _userManager = userManager;
-            _signInManager = signInManager;
+            _webHostEnvironment = webHostEnvironment;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        [BindProperty]
         public string Username { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        [TempData]
-        public string StatusMessage { get; set; }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [BindProperty]
-        public InputModel Input { get; set; }
+        public string Imagem_Perfil { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public class InputModel
-        {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
-        }
-
-        private async Task LoadAsync(IdentityUser user)
-        {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-
-            Username = userName;
-
-            Input = new InputModel
-            {
-                PhoneNumber = phoneNumber
-            };
-        }
+        [BindProperty]
+        public IFormFile ImagemPerfil { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound("Utilizador Asp não encontrado");
             }
 
-            await LoadAsync(user);
+            var utilizador = await _context.Utilizador.FirstOrDefaultAsync(u => u.UserID == user.Id);
+            if (utilizador == null)
+            {
+                return NotFound("Utilizador não encontrado");
+            }
+
+            Username = utilizador.Username;
+            Imagem_Perfil = utilizador.Imagem_Perfil;
+
             return Page();
         }
 
@@ -90,28 +53,48 @@ namespace Reading_Reviewys.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound("User not found");
             }
 
-            if (!ModelState.IsValid)
+            var utilizador = await _context.Utilizador.FirstOrDefaultAsync(u => u.UserID == user.Id);
+            if (utilizador == null)
             {
-                await LoadAsync(user);
-                return Page();
+                return NotFound("Utilizador not found");
             }
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
+            // Verifica se existe uma imagem submetida
+            if (ImagemPerfil != null)
             {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
+                // Validação do Formato do Documento submetido
+                if (ImagemPerfil.ContentType == "image/png" || ImagemPerfil.ContentType == "image/jpeg")
                 {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
-                    return RedirectToPage();
+                    // Geração de um nome único para a imagem
+                    string nomeImagem = Guid.NewGuid().ToString() + Path.GetExtension(ImagemPerfil.FileName).ToLowerInvariant();
+
+                    // Caminho para salvar a imagem
+                    string localizacaoImagem = Path.Combine(_webHostEnvironment.WebRootPath, "Imagens", nomeImagem);
+
+                    // Salvar a imagem para o servidor
+                    using (var stream = new FileStream(localizacaoImagem, FileMode.Create))
+                    {
+                        await ImagemPerfil.CopyToAsync(stream);
+                    }
+
+                    // Atualiza o caminho da imagem
+                    utilizador.Imagem_Perfil = nomeImagem;
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "O formato da imagem não é suportado. Por favor, escolha um formato válido");
+                    return Page();
                 }
             }
 
-            await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            // Atualiza o username
+            utilizador.Username = Username;
+            _context.Update(utilizador);
+            await _context.SaveChangesAsync();
+
             return RedirectToPage();
         }
     }

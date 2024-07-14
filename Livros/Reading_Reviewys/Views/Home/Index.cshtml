@@ -1,16 +1,76 @@
-﻿@{
+﻿@model IEnumerable<Reading_Reviewys.Models.Livro>
+
+@{
     ViewData["Title"] = "Página Principal";
 }
 
+@* Divs para descrição do site e apresentações *@
 <div class="text-center">
     <h1 class="display-4">Bem-vindo!</h1>
-    <!--<p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>-->
-    <div class="card">
-        <div class="card-body">
+    <div class="card mb-4">
+        <div class="card-body text-start">
             <p class="card-text">
-                Bem-vindo à <b>Reading Reviewys</b>, um fórum onde qualquer pessoa pode expressar a sua opinião e críticas sobre obras de autores apresentadas ao público e onde autores podem mostrar as suas obras e possivelmente imortalizar o seu nome no mundo da leitura. Bem-vindo à Reading Reviewys, um fórum onde qualquer pessoa pode expressar a sua opinião e críticas sobre obras de autores apresentadas ao público e onde autores podem mostrar as suas obras e possivelmente imortalizar o seu nome no mundo da leitura. Bem-vindo à Reading Reviewys, um fórum onde qualquer pessoa pode expressar a sua opinião e críticas sobre obras de autores apresentadas ao público e onde autores podem mostrar as suas obras e possivelmente imortalizar o seu nome no mundo da leitura.
+                Bem-vindo à Reading Reviewys, um fórum onde qualquer pessoa pode expressar a sua opinião e críticas sobre obras
+                de autores apresentadas ao público e onde autores podem mostrar as suas obras e possivelmente imortalizar o seu
+                nome no mundo da leitura.<br /> Caso queira evoluir neste fórum existe um formulátio que o assim permite, basta
+                só inserir o seu <strong>nome</strong>, <strong>nº de cartão de cidadão</strong>, <strong>data de expiração</strong> e <strong>CVV</strong>.
             </p>
-        </div>       
+        </div>
     </div>
 
+    @* Carrosel para os livros disponíveis para efetuar reviews *@
+    @if (Model != null && Model.Any())
+    {
+        <div id="IndicadorExemplo" class="carousel slide mb-4" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                @foreach (var livro in Model)
+                {
+                    <div class="carousel-item @(Model.First() == livro ? "active" : "")">
+                        <a href="@Url.Action("Details", "Livros", new { id = livro.IdLivro })">
+                            @if (!string.IsNullOrEmpty(livro.Capa))
+                            {
+                                <img src="~/Imagens/@livro.Capa" class="d-block w-100 h-auto" alt="@livro.Titulo" />
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5>@livro.Titulo</h5>
+                                </div>
+                            }
+                            else
+                            {
+                                <img src="~/Imagens/default_book.png" class="d-block w-100 h-auto" alt="Imagem indisponível" />
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5>Título Indisponível</h5>
+                                </div>
+                            }
+                        </a>
+                    </div>
+                }
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#IndicadorExemplo" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#IndicadorExemplo" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Próximo</span>
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            Nenhum livro disponível no momento.
+        </div>
+    }
+
+    @* Div para eventuais atualizações ao site*@
+    <div class="mb-5">
+        <h2 class="display-6">Atualizações</h2>
+        <div class="card">
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Neste momento não existe nenhuma atualização recente.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
